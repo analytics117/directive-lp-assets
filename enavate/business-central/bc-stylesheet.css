@@ -23,12 +23,12 @@
        self-hosted without an Adobe licence, so Newsreader Italic stands in.
        If Enavate has an Adobe Fonts kit with Kepler, add the kit to the
        page and it will be picked up first automatically. --- */
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:swap;}
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:swap;}
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
-@font-face{font-family:'BC Accent Serif';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-newsreader-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Accent Serif';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-newsreader-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
 
 :root {
   --brand-dark:   #002323;  /* Enavate deep green */
@@ -842,7 +842,7 @@
 /* ---------- Hero ---------- */
 .bc-hero {
   position: relative; min-height: 808px;
-  background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-hero-bg.jpg") center top / cover no-repeat;
+  background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/images/bc-hero-bg.jpg") center top / cover no-repeat;
 }
 .bc-hero__inner { display: flex; gap: 66px; padding-top: 80px; padding-bottom: 80px; padding-left: 120px; padding-right: 120px; }
 .bc-hero__copy { flex: 0 1 577px; }
@@ -972,10 +972,10 @@
 .bc-quote__role { display: block; font-size: 16px; line-height: 21px; color: #e5fcfb; }
 
 /* ---------- Closing CTA ---------- */
-.bc-cta { position: relative; min-height: 734px; background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-cta-bg.jpg") center / cover no-repeat; }
+.bc-cta { position: relative; min-height: 734px; background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/images/bc-cta-bg.jpg") center / cover no-repeat; }
 .bc-cta__card {
   position: absolute; right: 0; bottom: 0; width: 832px; height: 474px;
-  background: url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-cta-card.svg") left top / 832px 474px no-repeat;
+  background: url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/images/bc-cta-card.svg") left top / 832px 474px no-repeat;
   padding: 74px 70px 0 70px; color: var(--bc-dark);
 }
 .exos-page .bc-cta__title { max-width: 561px; font-size: 36px; line-height: 46.8px; letter-spacing: -0.014em; color: #004c47; }

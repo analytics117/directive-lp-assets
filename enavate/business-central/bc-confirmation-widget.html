@@ -8,8 +8,8 @@
      Styles and fonts are self-contained here, because the dialog
      does not inherit the page stylesheet.
 
-     IMPORTANT: size the widget at least 520px wide in the builder,
-     or the copy wraps early and looks smaller than it is.
+     IMPORTANT: the dialog is fixed at 512px wide, so size the widget about
+     460px wide by 280px tall. Everything below fits that.
      ============================================================ -->
 
 <div class="exos-thanks">
@@ -25,8 +25,8 @@
 </div>
 
 <style>
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
-@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
 .exos-thanks { --font-heading: 'BC Plus Jakarta Sans', system-ui, sans-serif; --font-body: 'BC Plus Jakarta Sans', system-ui, sans-serif; --brand-dark: #002323; --brand-accent: #00BFB2; }
 
 .exos-thanks {
@@ -46,13 +46,13 @@
 /* Same as the form card headline */
 .exos-thanks h2 {
   font-family: var(--font-heading) !important;
-  font-size: 40px !important;
+  font-size: 32px !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
   letter-spacing: -0.03em !important;
   color: var(--brand-dark, #002323) !important;
   margin: 0 0 14px !important;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Same as the form card subhead */
@@ -62,7 +62,7 @@
   line-height: 1.5 !important;
   color: var(--brand-dark, #002323) !important;
   margin: 0 !important;
-  max-width: 44ch;
+  max-width: 100%;
 }
 
 .exos-thanks .exos-thanks-meta {
