@@ -1,0 +1,1081 @@
+<style>
+/* ============================================================
+   DIRECTIVE UNBOUNCE STARTER KIT - STYLESHEET
+   Client: ENAVATE | Dynamics 365 Business Central
+   Paste into: Javascripts panel, placement HEAD.
+   Keep the <style> tags. They are part of this file.
+
+   TWO SECTIONS BELOW:
+     1. EDIT PER CLIENT  - fonts and brand colours
+     2. PLATFORM PLUMBING - do not edit, this is the stuff that
+        took a full build to work out. It fixes Unbounce's form
+        layout, full-bleed sections, mobile widths, scrolling
+        and the confirmation dialog.
+   ============================================================ */
+
+/* ============================================================
+   1. EDIT PER CLIENT  -  ENAVATE
+   ============================================================ */
+
+/* --- Brand fonts, self-hosted from the GitHub folder (SIL OFL).
+       Plus Jakarta Sans is the design's text face.
+       The design's italic accent face is Kepler Std (Adobe). It can't be
+       self-hosted without an Adobe licence, so Newsreader Italic stands in.
+       If Enavate has an Adobe Fonts kit with Kepler, add the kit to the
+       page and it will be picked up first automatically. --- */
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-500.woff2") format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Accent Serif';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-newsreader-400-italic.woff2") format('woff2');font-weight:400;font-style:italic;font-display:swap;}
+
+:root {
+  --brand-dark:   #002323;  /* Enavate deep green */
+  --brand-accent: #00BFB2;  /* button teal */
+  --brand-accessible-accent: #00988E;
+  --brand-field:  #FFFFFF;  /* form fields are white on the dark hero */
+  --brand-error:  #D93025;
+  --font-heading: 'BC Plus Jakarta Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body:    'BC Plus Jakarta Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-accent:  'Kepler Std', 'kepler-std', 'BC Accent Serif', Georgia, serif;
+
+  /* Business Central page palette, from the Figma file */
+  --bc-dark:   #002323;
+  --bc-deep:   #004C47;
+  --bc-teal:   #00988E;
+  --bc-teal-bright: #00BFB2;
+  --bc-lime:   #D6FF5C;
+  --bc-mint:   #E5FCFB;
+  --bc-ink:    #003935;
+}
+
+/* Logo helper. */
+.exos-logo { max-width: 100%; }
+
+/* ============================================================
+   2. PLATFORM PLUMBING - DO NOT EDIT BELOW THIS LINE
+   ============================================================ */
+/* ============================================================
+   UNBOUNCE ADDITIONS
+   Everything above came from the design file.
+   ============================================================ */
+
+.exos-page { width: 100%; overflow-x: hidden; padding-top: 81px; }
+
+/* Force the body font onto Unbounce's own elements too */
+.exos-page, .exos-page div, .exos-page p, .exos-page span,
+.exos-page li, .exos-page a, .exos-page button,
+.lp-pom-text, .lp-pom-text * {
+  font-family: var(--font-body);
+}
+.exos-page h1, .exos-page h2, .exos-page h3 {
+  font-family: var(--font-heading);
+}
+
+/* Sticky header */
+.exos-sticky-header { position: fixed !important; top: 0; left: 0; width: 100%; z-index: 900; }
+
+/* Step carousel: show one step at a time */
+.exos-step-panel, .exos-step-img-panel, .exos-step-fill { display: none; }
+.exos-step-panel.is-active, .exos-step-img-panel.is-active, .exos-step-fill.is-active { display: block; }
+
+/* FAQ: collapsed by default, animate open */
+.exos-faq-answer { display: block; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.exos-faq-minus { display: none; }
+.exos-faq-item.is-open .exos-faq-minus { display: block; }
+.exos-faq-item.is-open .exos-faq-plus { display: none; }
+.exos-faq-q { cursor: pointer; }
+
+/* Form slot: the white card the Unbounce form widget sits inside */
+.exos-form-slot { min-height: 620px; }
+@media (max-width: 767px) { .exos-form-slot { min-height: 700px; } }
+
+/* Form widget styling */
+.lp-pom-form .lp-pom-form-field { margin-bottom: 22px !important; }
+.lp-pom-form label {
+  font-family: var(--font-heading) !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important;
+  color: var(--brand-dark) !important; margin-bottom: 8px !important; display: block !important;
+}
+.lp-pom-form input[type="text"], .lp-pom-form input[type="email"],
+.lp-pom-form select, .lp-pom-form textarea {
+  width: 100% !important; box-sizing: border-box !important;
+  background: var(--brand-field) !important; border: none !important; box-shadow: none !important;
+  border-radius: 12px !important; padding: 17px 18px !important; height: auto !important;
+  font-family: var(--font-body) !important;
+  font-size: 17px !important; color: var(--brand-dark) !important;
+}
+.lp-pom-form input:focus, .lp-pom-form select:focus, .lp-pom-form textarea:focus {
+  outline: none !important; box-shadow: 0 0 0 2px var(--brand-accent) !important;
+}
+.lp-pom-form textarea { min-height: 108px !important; resize: vertical !important; }
+.lp-pom-form select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23201C52' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 18px center !important;
+  background-size: 18px !important; padding-right: 46px !important;
+}
+.lp-pom-form input:-webkit-autofill, .lp-pom-form input:-webkit-autofill:focus {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--brand-field) !important;
+  -webkit-text-fill-color: var(--brand-dark) !important;
+}
+.lp-pom-button {
+  background: var(--brand-accent) !important; background-image: none !important; border: none !important;
+  border-radius: 999px !important; padding: 20px 32px !important; height: auto !important;
+  width: 100% !important; box-shadow: none !important;
+  font-family: var(--font-heading) !important;
+  font-size: 18px !important; font-weight: 700 !important; color: var(--brand-dark) !important;
+}
+
+/* ---------- Mobile: values taken from the design file's own responsive logic ---------- */
+@media (max-width: 767px) {
+  .exos-page { padding-top: 66px !important; }
+  .r-stickybarsubtitle { display:none !important; }
+  .r-herostatsrow { max-width:1440px !important; margin:48px auto 0 !important; display:flex !important; flex-direction:column !important; border-top:1px solid #FFFFFF !important; animation:fadeIn 1s ease .5s both !important; }
+  .r-herostat1 { flex:1 !important; padding:24px 24px !important; border-bottom:1px solid #FFFFFF !important; }
+  .r-herostat2 { flex:1 !important; padding:24px 24px !important; border-bottom:1px solid #FFFFFF !important; }
+  .r-herostat3 { flex:1 !important; padding:24px 24px !important; border-bottom:1px solid #FFFFFF !important; }
+  .r-herostat4 { flex:1 !important; padding:24px 24px 48px !important; }
+  .r-clientlogospad { background:#fff !important; padding:22px 24px 51px 24px !important; }
+  .r-casestudypad { background:var(--brand-field) !important; padding:62px 24px 62px 24px !important; }
+  .r-casestudygrid { max-width:1296px !important; margin:0 auto !important; display:grid !important; grid-template-columns:1fr !important; gap:40px !important; align-items:center !important; }
+  .r-casestudyimgheight { position:relative !important; height:360px !important; overflow:visible !important; }
+  .r-problempad { background:#fff !important; padding:66px 24px 66px 24px !important; }
+  .r-problemhead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.032em !important; color:var(--brand-dark) !important; margin-top:22px !important; max-width:34ch !important; text-wrap:balance !important; }
+  .r-problemgrid { display:grid !important; grid-template-columns:1fr !important; gap:32px !important; margin-top:68px !important; }
+  .r-problemcard { border:1px solid var(--brand-field) !important; border-radius:22px !important; padding:32px !important; transition:border-color .3s ease,box-shadow .3s ease,transform .3s cubic-bezier(.2,.7,.2,1) !important; }
+  .r-implpad { background:linear-gradient(80.416deg,var(--brand-dark) -7.15%,var(--brand-accent) 237.91%) !important; padding:66px 24px 66px 24px !important; }
+  .r-implhead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.032em !important; color:#fff !important; margin-top:22px !important; max-width:20ch !important; text-wrap:balance !important; }
+  .r-implcardpad { background:#fff !important; border-radius:26px !important; padding:32px 24px !important; margin-top:28px !important; box-shadow:0 24px 60px rgba(32,28,82,.24) !important; }
+  .r-implstepgrid { display:grid !important; grid-template-columns:1fr !important; gap:24px !important; align-items:center !important; margin-top:32px !important; min-height:230px !important; }
+  .r-comparisonpad { background:var(--brand-dark) !important; padding:66px 24px 73px 24px !important; }
+  .r-comparisonhead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.032em !important; color:#fff !important; margin-top:22px !important; max-width:18ch !important; text-wrap:balance !important; }
+  .r-comparisongrid { display:grid !important; grid-template-columns:1fr !important; gap:22px !important; align-items:start !important; margin-top:48px !important; }
+  .r-outcomespad { background:var(--brand-field) !important; padding:66px 24px 66px 24px !important; }
+  .r-outcomeshead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.032em !important; color:var(--brand-dark) !important; margin-top:22px !important; max-width:18ch !important; text-wrap:balance !important; }
+  .r-outcomesgrid { display:grid !important; grid-template-columns:1fr !important; gap:24px !important; margin-top:68px !important; }
+  .r-faqpad { background:#fff !important; padding:66px 24px 66px 24px !important; }
+  .r-faqhead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.032em !important; color:var(--brand-dark) !important; margin-top:22px !important; }
+  .r-finalctapad { background:var(--brand-dark) !important; padding:66px 24px 70px 24px !important; }
+  .r-finalctagrid { max-width:1296px !important; margin:0 auto !important; display:grid !important; grid-template-columns:1fr !important; gap:48px !important; align-items:start !important; }
+  .r-finalctahead { font-family:var(--font-heading) !important; font-size:32px !important; font-weight:500 !important; line-height:1.2 !important; letter-spacing:-0.034em !important; color:#FFFFFF !important; margin-top:22px !important; max-width:15ch !important; text-wrap:balance !important; }
+  .r-footerrow { max-width:1296px !important; margin:0 auto !important; display:flex !important; flex-direction:column !important; justify-content:space-between !important; align-items:flex-start !important; gap:20px !important; }
+  .exos-page .exos-hero-stat { font-size: 56px !important; }
+}
+
+/* ---------- Hover states (from the design file) ---------- */
+.exos-page .exos-hv-1:hover { transform:translateY(-2px) !important; box-shadow:0 12px 28px rgba(0,219,168,.44) !important; }
+.exos-page .exos-hv-2:hover { background:var(--brand-accent) !important; border-color:var(--brand-field) !important; }
+.exos-page .exos-hv-3:hover { transform:translateY(-2px) !important; box-shadow:0 14px 32px rgba(0,219,168,.42) !important; }
+.exos-page .exos-hv-4:hover { filter:grayscale(0) !important; opacity:1 !important; }
+.exos-page .exos-hv-5:hover { gap:16px !important; color:var(--brand-dark) !important; }
+.exos-page .exos-hv-6:hover { border-color:var(--brand-accent) !important; box-shadow:0 20px 48px rgba(32,28,82,.09) !important; transform:translateY(-4px) !important; }
+.exos-page .exos-hv-7:hover { border-color:var(--brand-dark) !important; background:var(--brand-field) !important; }
+.exos-page .exos-hv-8:hover { transform:translateY(-2px) !important; box-shadow:0 10px 24px rgba(32,28,82,.3) !important; }
+.exos-page .exos-hv-9:hover { transform:translateY(-5px) !important; box-shadow:0 26px 60px rgba(32,28,82,.14) !important; }
+.exos-page .exos-hv-10:hover { color:var(--brand-accent) !important; }
+@media (hover: none) { .exos-page [class*="exos-hv-"]:hover { transform: none !important; } }
+
+/* ============================================================
+   UNBOUNCE MOBILE CONTAINER OVERRIDES
+   Unbounce's own wrappers are fixed-width, which stops the
+   media query above from ever taking visible effect on a phone.
+   ============================================================ */
+@media (max-width: 767px) {
+  #lp-pom-root, .lp-pom-root, .lp-pom-body,
+  .lp-pom-block, .lp-pom-block-content,
+  [id^="lp-code"], [id^="lp-pom-block"], [id^="lp-pom-box"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    position: relative !important;
+  }
+  .exos-page, .exos-page * { box-sizing: border-box !important; }
+  .exos-page img, .exos-page video { max-width: 100% !important; }
+  .exos-page [style*="max-width:1440px"] { max-width: 100% !important; }
+  .exos-page [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  .exos-page [style*="72px"] { padding-left: 24px !important; padding-right: 24px !important; }
+}
+
+/* ============================================================
+   MOBILE WIDTH FIX
+   Forces every Unbounce wrapper to full viewport width.
+   ============================================================ */
+@media (max-width: 767px) {
+  html, body { width: 100% !important; max-width: 100% !important; }
+  /* Scoped to the page root. Targeting body > * displaced Unbounce's
+     confirmation dialog, which is positioned as a direct child of body. */
+  #lp-pom-root > *, .lp-pom-root > * {
+    width: 100% !important; max-width: 100% !important;
+    left: 0 !important; margin-left: 0 !important; transform: none !important;
+  }
+  .exos-page { width: 100% !important; max-width: 100% !important; }
+}
+
+
+/* ---------- Form slot: make the widget flow inside the card ---------- */
+.exos-form-slot {
+  position: relative !important;
+  min-height: 0 !important;
+  margin-top: 30px;
+}
+.exos-form-slot > *,
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot [id^="lp-pom-box"],
+.exos-form-slot .lp-pom-form,
+.exos-form-slot form,
+.exos-form-slot .lp-pom-form-field {
+  position: relative !important;
+  left: 0 !important; top: 0 !important;
+  width: 100% !important; max-width: 100% !important;
+  height: auto !important; min-height: 0 !important;
+  margin-left: 0 !important; margin-right: 0 !important;
+  float: none !important;
+}
+/* Hide the form until the script has moved it, so it never flashes in the hero */
+
+
+
+
+/* Form widget sits inside the coded card */
+.exos-form-slot .lp-pom-form,
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot [id^="lp-pom-box"] {
+  position: relative !important; left: 0 !important; top: 0 !important;
+  width: 100% !important; max-width: 100% !important;
+}
+
+/* ============================================================
+   FIXES - 11 Aug
+   ============================================================ */
+
+/* Full-bleed: kill Unbounce's fixed-width containers on ALL sizes */
+#lp-pom-root, .lp-pom-root, .lp-pom-body,
+.lp-pom-block, .lp-pom-block-content,
+[id^="lp-code"], [id^="lp-pom-block"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.exos-page { width: 100% !important; max-width: 100% !important; }
+.exos-page > div { width: 100% !important; }
+
+/* Hide the duplicate CTA in the hero nav row */
+.exos-hero-ghost-cta { display: none !important; }
+
+/* Comparison card titles: single line, normal leading */
+.exos-compare-title {
+  max-width: none !important;
+  white-space: nowrap !important;
+  line-height: 1.3 !important;
+  text-wrap: nowrap !important;
+}
+@media (max-width: 900px) {
+  .exos-compare-title { white-space: normal !important; text-wrap: balance !important; }
+}
+
+/* ============================================================
+   FULL-BLEED SECTIONS
+   Breaks the page out of whatever width Unbounce's container is,
+   so every coloured background runs edge to edge.
+   ============================================================ */
+/* overflow-x on html/body collapses the document's scroll height, which
+   breaks programmatic scrolling. Clip on the page wrapper instead. */
+.exos-page { overflow-x: clip; }
+
+.exos-page {
+  position: relative !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+}
+.exos-page > div { width: 100% !important; max-width: 100% !important; }
+
+.lp-pom-block, .lp-pom-block-content, [id^="lp-code"] {
+  overflow: visible !important;
+}
+
+/* ============================================================
+   UNBOUNCE FORM: force absolute-positioned fields into normal flow
+   ============================================================ */
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot .lp-pom-form,
+.exos-form-slot form,
+.exos-form-slot .lp-pom-form-field,
+.exos-form-slot .lp-pom-form-field > label,
+.exos-form-slot .lp-pom-button,
+.exos-form-slot [id^="container_"] {
+  position: static !important;
+  top: auto !important; left: auto !important;
+  right: auto !important; bottom: auto !important;
+  height: auto !important; min-height: 0 !important;
+  transform: none !important;
+  float: none !important;
+}
+
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot .lp-pom-form,
+.exos-form-slot form {
+  width: 100% !important; max-width: 100% !important;
+  margin: 0 !important; padding: 0 !important;
+  background: none !important; border: none !important; box-shadow: none !important;
+}
+
+.exos-form-slot .lp-pom-form-field {
+  display: block !important;
+  width: 100% !important; max-width: 100% !important;
+  margin: 0 0 22px 0 !important;
+  clear: both !important;
+}
+
+.exos-form-slot .lp-pom-button {
+  display: block !important;
+  width: 100% !important; max-width: 100% !important;
+  margin: 4px 0 0 0 !important;
+}
+
+/* Unbounce sometimes wraps the button in its own absolutely placed box */
+.exos-form-slot .lp-pom-button-wrapper,
+.exos-form-slot [id^="lp-pom-button"] {
+  position: static !important;
+  width: 100% !important; left: auto !important; top: auto !important;
+}
+
+
+/* ============================================================
+   MOBILE FIXES - hero spacing, headline wrap, stat alignment
+   Breakpoint raised to 900px to match the design file's own 860px logic.
+   ============================================================ */
+@media (max-width: 900px) {
+
+  /* Hero: kill the empty band above the headline */
+  .exos-page .r-heronav,
+  .exos-page .exos-hero-nav { display: none !important; }
+  .exos-page [style*="padding:34px 72px"] { display: none !important; }
+  .exos-page [style*="padding:104px 72px 0"] { padding: 40px 24px 0 !important; }
+
+  /* Headline: let long words break instead of running off screen */
+  .exos-page h1, .exos-page h2, .exos-page h3 {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: auto !important;
+    max-width: 100% !important;
+  }
+  .exos-page h1 { font-size: 34px !important; line-height: 1.12 !important; }
+
+  /* Stat rows: number and label share a top edge */
+  .exos-page [style*="align-items:baseline"] {
+    align-items: center !important;
+    gap: 16px !important;
+  }
+  .exos-page [style*="min-width:110px"] {
+    min-width: 88px !important;
+    line-height: 1.15 !important;
+  }
+  .exos-page [style*="min-width:110px"] + span {
+    line-height: 1.35 !important;
+    padding-top: 0 !important;
+  }
+}
+
+/* Stat rows: number and label vertically centred */
+.exos-page [style*="align-items:baseline"] { align-items: center !important; }
+.exos-page [style*="min-width:110px"] + span { line-height: 1.35; padding-top: 0; }
+
+/* ---------- Form: labels and fields full width, normal wrapping ---------- */
+.exos-form-slot label,
+.exos-form-slot .lp-pom-form-field label {
+  width: 100% !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: block !important;
+}
+.exos-form-slot .lp-pom-form-field,
+.exos-form-slot [id^="container_"] {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.exos-form-slot .lp-pom-button + .lp-pom-button { display: none !important; }
+
+
+/* ============================================================
+   FORM: visible fields are ours, the Unbounce widget is hidden
+   and receives the values on submit (keeps lead capture + tracking).
+   ============================================================ */
+.exos-form-slot {
+  position: relative !important;
+  left: auto !important; top: auto !important;
+  width: 100% !important; height: auto !important;
+  opacity: 1 !important; overflow: visible !important; clip: auto !important;
+  margin-top: 30px;
+}
+
+.exos-form { margin-top: 30px; }
+.exos-form .exos-fstep { display: none; }
+.exos-form .exos-fstep.is-active { display: block; }
+
+.exos-form .exos-field { margin-bottom: 22px; }
+.exos-form label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 12px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--brand-dark); margin-bottom: 8px;
+}
+.exos-form .exos-optional {
+  text-transform: none; letter-spacing: 0; font-weight: 400; color: #8A8A9C;
+}
+.exos-form input,
+.exos-form select,
+.exos-form textarea {
+  width: 100%; box-sizing: border-box;
+  background: var(--brand-field); border: none; border-radius: 12px;
+  padding: 17px 18px;
+  font-family: var(--font-body);
+  font-size: 17px; color: var(--brand-dark);
+  transition: box-shadow .2s ease;
+}
+.exos-form textarea { min-height: 108px; resize: vertical; }
+.exos-form input:focus,
+.exos-form select:focus,
+.exos-form textarea:focus {
+  outline: none; box-shadow: 0 0 0 2px var(--brand-accent);
+}
+.exos-form ::placeholder { color: #8A8A9C; }
+.exos-form select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23201C52' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 18px center;
+  background-size: 18px; padding-right: 46px;
+}
+.exos-form .exos-invalid { box-shadow: 0 0 0 2px var(--brand-error) !important; }
+
+.exos-form .exos-fbtn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; border: none; cursor: pointer;
+  background: var(--brand-accent); border-radius: 999px; padding: 20px 32px;
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 700; color: var(--brand-dark);
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease;
+  margin-top: 8px;
+}
+.exos-form .exos-fbtn:hover {
+  transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,219,168,.44);
+}
+.exos-form .exos-fback {
+  display: block; width: 100%; margin-top: 14px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 15px; color: #8A8A9C; text-decoration: underline;
+}
+.exos-form .exos-fback:hover { color: var(--brand-dark); }
+
+.exos-form .exos-fdone-title {
+  font-family: var(--font-heading);
+  font-size: 28px; font-weight: 700; color: var(--brand-dark); margin: 8px 0 10px;
+}
+.exos-form .exos-fdone-text { font-size: 18px; line-height: 1.5; color: #55556B; margin: 0; }
+
+@media (max-width: 900px) {
+  .exos-form input, .exos-form select, .exos-form textarea { font-size: 16px; }
+  .exos-form .exos-fbtn { font-size: 16px; padding: 17px 24px; }
+}
+
+
+/* Case study quote: 44px is far too large on a phone */
+@media (max-width: 900px) {
+  .exos-page blockquote {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.015em !important;
+    max-width: 100% !important;
+  }
+}
+@media (max-width: 400px) {
+  .exos-page blockquote { font-size: 22px !important; }
+}
+
+
+/* Two-up row for first / last name */
+.exos-form .exos-frow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) {
+  .exos-form .exos-frow { grid-template-columns: 1fr; gap: 0; }
+}
+
+
+/* Step-specific headline and subhead */
+.exos-fhead { display: none; }
+.exos-fhead.is-active { display: block; }
+
+/* Back button with arrow */
+.exos-form .exos-fback {
+  display: flex !important; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 16px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 16px; font-weight: 600; color: var(--brand-dark); text-decoration: none;
+  transition: gap .2s ease, color .2s ease;
+}
+.exos-form .exos-fback:hover { gap: 12px; color: #107C7D; }
+.exos-form .exos-fback svg { display: block; }
+
+
+/* Scroll anchor: scroll-margin keeps the sticky header from covering the card */
+#exos-form, .exos-form { scroll-margin-top: 120px; }
+@media (max-width: 900px) { #exos-form, .exos-form { scroll-margin-top: 90px; } }
+
+
+/* Submit error message */
+.exos-form .exos-ferror {
+  font-size: 15px; line-height: 1.5; color: var(--brand-error);
+  background: #FDEDEC; border-radius: 12px;
+  padding: 14px 16px; margin: 0 0 16px;
+}
+
+
+/* ============================================================
+   UNBOUNCE FORM, STYLED IN PLACE
+   ============================================================ */
+.exos-form-slot form,
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot .lp-pom-form {
+  position: static !important;
+  width: 100% !important; max-width: 100% !important;
+  height: auto !important; margin: 0 !important; padding: 0 !important;
+  background: none !important; border: none !important; box-shadow: none !important;
+}
+
+.exos-form-slot .lp-pom-form-field {
+  position: static !important;
+  display: block !important;
+  width: 100% !important; max-width: 100% !important;
+  height: auto !important;
+  margin: 0 0 22px 0 !important;
+}
+
+.exos-form-slot label {
+  position: static !important;
+  display: block !important;
+  width: 100% !important; max-width: 100% !important;
+  white-space: normal !important; overflow: visible !important;
+  text-overflow: clip !important;
+  font-family: var(--font-heading) !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important;
+  color: var(--brand-dark) !important; margin: 0 0 8px 0 !important;
+}
+
+.exos-form-slot input[type="text"],
+.exos-form-slot input[type="email"],
+.exos-form-slot input[type="tel"],
+.exos-form-slot select,
+.exos-form-slot textarea {
+  position: static !important;
+  width: 100% !important; max-width: 100% !important;
+  box-sizing: border-box !important;
+  background: var(--brand-field) !important; border: none !important; box-shadow: none !important;
+  border-radius: 12px !important; padding: 17px 18px !important; height: auto !important;
+  font-family: var(--font-body) !important;
+  font-size: 17px !important; color: var(--brand-dark) !important;
+}
+.exos-form-slot textarea { min-height: 108px !important; resize: vertical !important; }
+.exos-form-slot input:focus,
+.exos-form-slot select:focus,
+.exos-form-slot textarea:focus {
+  outline: none !important; box-shadow: 0 0 0 2px var(--brand-accent) !important;
+}
+.exos-form-slot .exos-invalid { box-shadow: 0 0 0 2px var(--brand-error) !important; }
+.exos-form-slot select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23201C52' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 18px center !important;
+  background-size: 18px !important; padding-right: 46px !important;
+}
+.exos-form-slot input:-webkit-autofill,
+.exos-form-slot input:-webkit-autofill:focus {
+  -webkit-box-shadow: inset 0 0 0 1000px var(--brand-field) !important;
+  -webkit-text-fill-color: var(--brand-dark) !important;
+}
+
+/* Unbounce's own submit button, restyled */
+.exos-form-slot .lp-pom-button,
+.exos-form-slot input[type="submit"],
+.exos-form-slot button[type="submit"] {
+  position: static !important;
+  display: block !important;
+  width: 100% !important; max-width: 100% !important; height: auto !important;
+  background: var(--brand-accent) !important; background-image: none !important;
+  border: none !important; border-radius: 999px !important;
+  padding: 20px 32px !important; margin: 8px 0 0 0 !important;
+  box-shadow: none !important; cursor: pointer;
+  font-family: var(--font-heading) !important;
+  font-size: 18px !important; font-weight: 700 !important; color: var(--brand-dark) !important;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease;
+}
+.exos-form-slot .lp-pom-button:hover {
+  transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,219,168,.44) !important;
+}
+
+/* Step switching */
+.exos-form-slot[data-step="1"] .exos-s2 { display: none !important; }
+.exos-form-slot[data-step="2"] .exos-s1 { display: none !important; }
+
+/* Our Continue button (never submits) */
+.exos-form-slot .exos-fbtn {
+  display: flex !important; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; border: none; cursor: pointer;
+  background: var(--brand-accent); border-radius: 999px; padding: 20px 32px; margin-top: 8px;
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 700; color: var(--brand-dark);
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease;
+}
+.exos-form-slot .exos-fbtn:hover {
+  transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,219,168,.44);
+}
+.exos-form-slot .exos-fback {
+  display: flex !important; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 16px; background: none; border: none; cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 16px; font-weight: 600; color: var(--brand-dark);
+  transition: gap .2s ease, color .2s ease;
+}
+.exos-form-slot .exos-fback:hover { gap: 12px; color: #107C7D; }
+
+@media (max-width: 900px) {
+  .exos-form-slot input, .exos-form-slot select, .exos-form-slot textarea { font-size: 16px !important; }
+  .exos-form-slot .lp-pom-button, .exos-form-slot .exos-fbtn { font-size: 16px !important; padding: 17px 24px !important; }
+}
+
+
+/* Force full width through every Unbounce wrapper inside the card */
+.exos-form-slot,
+.exos-form-slot > *,
+.exos-form-slot [id^="lp-pom-form"],
+.exos-form-slot [id^="lp-pom-box"],
+.exos-form-slot [id^="container_"],
+.exos-form-slot .lp-pom-form,
+.exos-form-slot .lp-pom-form-field,
+.exos-form-slot form,
+.exos-form-slot fieldset,
+.exos-form-slot label,
+.exos-form-slot input,
+.exos-form-slot select,
+.exos-form-slot textarea {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  float: none !important;
+}
+.exos-form-slot label { white-space: normal !important; }
+
+/* Unbounce's own step buttons, restyled */
+.exos-form-slot .lp-pom-button[value*="Previous" i],
+.exos-form-slot .lp-pom-button[value*="Back" i],
+.exos-form-slot button[data-step-back] {
+  background: none !important;
+  color: var(--brand-dark) !important;
+  box-shadow: none !important;
+  font-size: 16px !important;
+  padding: 12px !important;
+  margin-top: 6px !important;
+}
+
+
+
+/* Fields grow with their content, so nothing overlaps the buttons on mobile */
+.exos-form-slot,
+.exos-form-slot * {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+.exos-form-slot textarea { min-height: 108px !important; }
+.exos-form-slot .lp-pom-form-field,
+.exos-form-slot form > div {
+  display: block !important;
+  clear: both !important;
+  margin-bottom: 22px !important;
+}
+.exos-form-slot .exos-fbtn,
+.exos-form-slot .lp-pom-button,
+.exos-form-slot input[type="submit"] {
+  clear: both !important;
+  margin-top: 10px !important;
+}
+
+
+/* Nothing inside the form may be absolutely positioned, or tall fields
+   sit on top of the buttons (this bites hardest on mobile). */
+.exos-form-slot,
+.exos-form-slot * {
+  position: static !important;
+  top: auto !important; left: auto !important;
+  right: auto !important; bottom: auto !important;
+  transform: none !important;
+}
+.exos-form-slot form {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.exos-form-slot form > * { flex: 0 0 auto !important; }
+
+
+/* Logo helper (duplicate of section 1, kept for kit parity) */
+.exos-logo { max-width: 100%; }
+/* .exos-logo { filter: brightness(0) invert(1); } */
+
+
+/* Case study image: the negative margins cancel the section's 112px padding. */
+.exos-casestudy-img {
+  align-self: stretch !important;
+  margin-top: -112px !important;
+  margin-bottom: -112px !important;
+  min-height: 600px;
+  overflow: hidden;
+}
+@media (max-width: 900px) {
+  /* -62px cancels the section's mobile bottom padding so the portrait
+     sits flush with the bottom edge of the grey band. */
+  .exos-casestudy-img {
+    margin-top: 24px !important;
+    margin-bottom: -62px !important;
+    min-height: 360px;
+  }
+}
+
+
+/* Unbounce's dialogs sit outside the page layout. Keep our page-wide
+   overrides off them, and centre them on small screens. */
+@media (max-width: 767px) {
+  /* Fixed, so it centres against the screen rather than against
+     whatever wide container Unbounce nests it in. */
+  [id*="lightbox" i], [class*="lightbox" i],
+  [id*="confirm" i], [class*="confirm" i] {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: calc(100vw - 32px) !important;
+    max-height: 86vh !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+  }
+}
+
+
+
+
+/* ============================================================
+   3. ENAVATE - DYNAMICS 365 BUSINESS CENTRAL PAGE
+   Everything below is this page's layout, built from the
+   approved Figma design (1440px desktop frame). All classes
+   are prefixed bc- so nothing collides with other Enavate pages.
+   ============================================================ */
+
+.exos-page.bc-page { padding-top: 60px !important; background: var(--bc-dark); color: #fff; }
+.exos-page.bc-page *, .exos-page.bc-page *::before, .exos-page.bc-page *::after { box-sizing: border-box; }
+:where(.bc-page) img { display: block; max-width: 100%; height: auto; }
+:where(.bc-page) :where(p, h1, h2, h3, ul, blockquote, figure) { margin: 0; padding: 0; }
+:where(.bc-page) :where(h1, h2, h3) { font-weight: 400; }
+:where(.bc-page) a { color: inherit; }
+
+/* Italic serif accent words, with the design's gradient fill */
+.exos-page .bc-accent {
+  font-family: var(--font-accent) !important;
+  font-style: italic; font-weight: 400;
+  letter-spacing: -0.01em;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  padding-right: .06em; /* keeps the last italic glyph from clipping */
+}
+.bc-accent--lime { background-image: linear-gradient(90deg, #00e1d6 0%, #d6ff5c 100%); }
+.bc-accent--warm { background-image: linear-gradient(90deg, #00e1d6 0%, #8cf586 40%, #d6ff5c 82%, #ffc53d 100%); }
+.exos-page .bc-accent--ink { -webkit-text-fill-color: currentColor; color: inherit; background: none; }
+
+.bc-wrap { width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 80px; }
+.bc-eyebrow {
+  font-size: 16px; line-height: 24px; font-weight: 600;
+  letter-spacing: .02em; text-transform: uppercase; color: var(--bc-teal-bright);
+}
+
+/* ---------- Buttons ---------- */
+.exos-page .bc-btn {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-width: 175px; height: 43px; padding: 0 7px 0 22px;
+  background: var(--bc-teal-bright); border: 1px solid var(--bc-teal-bright); border-radius: 6.73px;
+  color: #fff; text-decoration: none;
+  font-family: var(--font-heading); font-size: 13.4px; line-height: 20px; font-weight: 700; letter-spacing: -0.01em;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s ease, background-color .2s ease;
+}
+.bc-btn__icon {
+  flex: 0 0 29px; width: 29px; height: 29px; border-radius: 5.05px; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.bc-btn__icon svg { width: 12px; height: 12px; display: block; }
+.exos-page .bc-btn:hover { background: #00a99d; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,191,178,.35); }
+.bc-btn-row { display: flex; justify-content: center; margin-top: 36px; }
+
+/* ---------- Header ---------- */
+.bc-header { height: 60px; background: #fff; display: flex; align-items: center; padding: 0 36px; box-shadow: 0 1px 0 rgba(0,35,35,.06); }
+.bc-header a { display: block; line-height: 0; }
+.bc-header img { width: 161px; height: auto; }
+
+/* ---------- Hero ---------- */
+.bc-hero {
+  position: relative; min-height: 808px;
+  background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-hero-bg.jpg") center top / cover no-repeat;
+}
+.bc-hero__inner { display: flex; gap: 66px; padding-top: 80px; padding-bottom: 80px; padding-left: 120px; padding-right: 120px; }
+.bc-hero__copy { flex: 0 1 577px; }
+.bc-hero__eyebrow { font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: .02em; text-transform: uppercase; color: #fff; }
+.exos-page .bc-h1 {
+  margin-top: 40px; font-size: 52px; line-height: 62.5px; letter-spacing: -0.01em; color: #fff;
+}
+.exos-page .bc-h1 .bc-accent { font-size: 58px; line-height: 62.5px; }
+.bc-h1__last { display: inline-block; margin-top: 12px; }
+.bc-hero__lede { margin-top: 42px; max-width: 566px; font-size: 20px; line-height: 31px; color: #fff; }
+.bc-hero__form { flex: 0 1 469px; padding-top: 18px; }
+.bc-form-title { font-size: 22px; line-height: 30.8px; letter-spacing: -0.01em; color: #fff; max-width: 425px; }
+.bc-form-sub { margin-top: 17px; font-size: 16px; line-height: 24px; color: #fff; }
+.bc-form-legal { margin-top: 17px; font-size: 14px; line-height: 21px; color: #fff; }
+.bc-form-legal a { color: #fff; text-decoration: underline; }
+
+/* The Unbounce form, restyled to the design: white fields, no visible labels */
+.bc-hero .exos-form-slot { margin-top: 17px !important; }
+.bc-hero .exos-form-slot .lp-pom-form-field,
+.bc-hero .exos-form-slot form > div { margin: 0 0 17px 0 !important; }
+.bc-hero .exos-form-slot label,
+.bc-hero .exos-form-slot .lp-pom-form-field label {
+  position: absolute !important; width: 1px !important; height: 1px !important; max-width: 1px !important;
+  overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important;
+  margin: -1px !important; padding: 0 !important; border: 0 !important;
+}
+.bc-hero .exos-form-slot input[type="text"],
+.bc-hero .exos-form-slot input[type="email"],
+.bc-hero .exos-form-slot input[type="tel"],
+.bc-hero .exos-form-slot select,
+.bc-hero .exos-form-slot textarea {
+  background: #fff !important; border: 1px solid transparent !important; border-radius: 8px !important;
+  height: 40px !important; min-height: 40px !important; padding: 0 12px !important;
+  font-family: var(--font-body) !important; font-size: 14px !important; line-height: 38px !important;
+  color: #212d3a !important; box-shadow: none !important;
+}
+.bc-hero .exos-form-slot textarea { height: auto !important; min-height: 96px !important; padding: 10px 12px !important; line-height: 1.5 !important; }
+.bc-hero .exos-form-slot select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23212d3a' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 12px center !important; background-size: 14px !important; padding-right: 36px !important; }
+.bc-hero .exos-form-slot ::placeholder { color: #212d3a; opacity: 1; }
+.bc-hero .exos-form-slot input:focus,
+.bc-hero .exos-form-slot select:focus,
+.bc-hero .exos-form-slot textarea:focus { box-shadow: 0 0 0 2px var(--bc-lime) !important; }
+.bc-hero .exos-form-slot input:-webkit-autofill { -webkit-box-shadow: inset 0 0 0 1000px #fff !important; -webkit-text-fill-color: #212d3a !important; }
+.bc-hero .exos-form-slot .exos-invalid,
+.bc-hero .exos-form-slot input.error, .bc-hero .exos-form-slot input[aria-invalid="true"] { box-shadow: 0 0 0 2px #ff913d !important; }
+.bc-hero .exos-form-slot label.error, .bc-hero .exos-form-slot .error-msg { position: static !important; width: auto !important; height: auto !important; max-width: none !important; clip: auto !important; margin: 4px 0 0 !important; font-size: 13px !important; letter-spacing: 0 !important; text-transform: none !important; color: #ffb277 !important; }
+
+/* Unbounce's submit button, made to look like the design's "Get in Touch" button */
+.bc-hero .exos-form-slot .lp-pom-button,
+.bc-hero .exos-form-slot button[type="submit"],
+.bc-hero .exos-form-slot input[type="submit"] {
+  display: inline-flex !important; align-items: center !important; justify-content: space-between !important; gap: 16px !important;
+  width: auto !important; min-width: 175px !important; max-width: 100% !important;
+  height: 43px !important; min-height: 43px !important; padding: 0 7px 0 22px !important; margin: 6px 0 0 0 !important;
+  background: var(--bc-teal-bright) !important; background-image: none !important;
+  border: 1px solid var(--bc-teal-bright) !important; border-radius: 6.73px !important; box-shadow: none !important;
+  font-family: var(--font-heading) !important; font-size: 13.4px !important; font-weight: 700 !important;
+  line-height: 20px !important; letter-spacing: -0.01em !important; color: #fff !important; text-transform: none !important;
+  align-self: flex-start !important;
+}
+.bc-hero .exos-form-slot .lp-pom-button::after {
+  content: ""; flex: 0 0 29px; width: 29px; height: 29px; border-radius: 5.05px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M1.2 10.8L10.6 1.4M3 1.1h7.6v7.6' stroke='%2300988e' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat;
+}
+.bc-hero .exos-form-slot .lp-pom-button .label { position: static !important; color: #fff !important; font: inherit !important; }
+.bc-hero .exos-form-slot .lp-pom-button:hover { background: #00a99d !important; transform: translateY(-2px) !important; box-shadow: 0 12px 28px rgba(0,191,178,.35) !important; }
+
+/* ---------- Client logo band ---------- */
+.bc-logos { background: var(--bc-lime); padding: 44px 0 35px; color: var(--bc-dark); }
+.exos-page .bc-logos__title { font-size: 36px; line-height: 46.8px; letter-spacing: -0.014em; text-align: center; color: var(--bc-dark); }
+.bc-logos__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 61px; margin-top: 50px; list-style: none; }
+.bc-logos__row li { padding: 0 15px; }
+
+/* ---------- Proof / stats ---------- */
+.bc-proof { background: linear-gradient(180deg, #002323 35%, #004c47 70%, #00988e 100%); padding: 112px 0 113px; }
+.bc-proof__head { max-width: 709px; margin: 0 auto; text-align: center; }
+.exos-page .bc-h2 { font-size: 52px; line-height: 62.4px; letter-spacing: -0.01em; }
+.exos-page .bc-h2 .bc-accent { font-size: 60px; }
+.bc-proof__sub { margin-top: 24px; font-size: 20px; line-height: 31px; color: #fff; }
+.bc-proof__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 80px; list-style: none; }
+.bc-stat { background: #fff; border-radius: 8px; overflow: hidden; color: #000; }
+.bc-stat img { width: 100%; aspect-ratio: 310 / 166; object-fit: cover; }
+.bc-stat__body { padding: 32px; }
+.exos-page .bc-stat__num { font-size: 44px; line-height: 52.8px; letter-spacing: -0.01em; color: var(--bc-teal); }
+.exos-page .bc-stat__label { font-size: 30px; line-height: 39px; letter-spacing: -0.012em; color: #000202; }
+.exos-page .bc-stat__label--sm { font-size: 26px; }
+.bc-stat__desc { margin-top: 16px; font-size: 16px; line-height: 24px; color: #000; }
+
+/* ---------- Capabilities ---------- */
+.bc-caps { position: relative; background: #fff; padding: 100px 0; color: var(--bc-ink); overflow: hidden; }
+.bc-caps__deco { position: absolute; top: 0; right: 0; width: 118px; height: auto; }
+.exos-page .bc-caps__title { text-align: center; color: #000; font-size: 52px; line-height: 62.4px; letter-spacing: -0.01em; }
+.exos-page .bc-caps__title .bc-accent { font-size: 72px; line-height: 0; letter-spacing: -0.028em; }
+.bc-caps__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1256px; margin: 55px auto 0; list-style: none; }
+.bc-cap { background: #fff; border: 1px solid #d8d9d9; border-radius: 8px; padding: 32px 40px 40px; transition: border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.2,.7,.2,1); }
+.bc-cap:hover { border-color: var(--bc-teal-bright); box-shadow: 0 20px 48px rgba(0,35,35,.08); transform: translateY(-4px); }
+.bc-cap__icon { height: 48px; display: flex; align-items: center; }
+.bc-cap__icon img { max-height: 48px; }
+.exos-page .bc-cap__title { margin-top: 24px; font-family: var(--font-heading); font-size: 16px; line-height: 24px; font-weight: 600; letter-spacing: -0.014em; text-transform: uppercase; color: #00b8b1; }
+.bc-cap__text { margin-top: 16px; font-size: 18px; line-height: 27px; color: #003935; }
+
+/* ---------- Benefits ---------- */
+.bc-why { background: var(--bc-dark); padding: 100px 0 60px; }
+.bc-why__grid { display: grid; grid-template-columns: minmax(0, 691px) minmax(0, 519px); justify-content: space-between; gap: 40px; align-items: start; }
+.exos-page .bc-why__title { font-size: 52px; line-height: 62.5px; letter-spacing: -0.01em; color: #fff; max-width: 540px; }
+.exos-page .bc-why__title .bc-accent { font-size: 60px; }
+.bc-why__list { list-style: none; margin-top: 51px; display: grid; gap: 52px; }
+.bc-why__item { display: grid; grid-template-columns: 118px 1fr; gap: 30px; align-items: start; }
+.bc-why__item img { width: 118px; }
+.bc-why__eyebrow { font-size: 16px; line-height: 24px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--bc-teal-bright); }
+.exos-page .bc-why__h { margin-top: 13px; font-size: 28px; line-height: 39.2px; letter-spacing: -0.01em; color: #fff; }
+.bc-why__p { margin-top: 10px; font-size: 18px; line-height: 27px; color: #fff; }
+.bc-why__photo { margin-top: 45px; }
+.bc-why__photo img { width: 519px; }
+
+/* ---------- Testimonials ---------- */
+.bc-quotes { background: linear-gradient(180deg, #002323 0%, #206d69 72%, #4cd2c9 100%); padding: 100px 0 100px; text-align: center; }
+.bc-quotes .bc-eyebrow { display: block; }
+.exos-page .bc-quotes__title { margin-top: 16px; font-size: 52px; line-height: 62.5px; letter-spacing: -0.01em; color: #fff; }
+.bc-quotes__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-top: 50px; text-align: left; list-style: none; }
+.bc-quote { background: var(--bc-dark); border-radius: 8px; padding: 32px; box-shadow: 0 12px 32px rgba(0,0,0,.18); display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
+.exos-page .bc-quote blockquote { font-style: italic; font-size: 18px !important; line-height: 27px !important; letter-spacing: 0 !important; color: #fff; }
+.exos-page .bc-quote blockquote p { font-style: italic; }
+.bc-quote figcaption { display: flex; align-items: center; gap: 18px; }
+.bc-quote figcaption img { flex: 0 0 auto; }
+.bc-quote__name { display: block; font-size: 16px; line-height: 20.8px; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
+.bc-quote__role { display: block; font-size: 16px; line-height: 21px; color: #e5fcfb; }
+
+/* ---------- Closing CTA ---------- */
+.bc-cta { position: relative; min-height: 734px; background: var(--bc-dark) url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-cta-bg.jpg") center / cover no-repeat; }
+.bc-cta__card {
+  position: absolute; right: 0; bottom: 0; width: 832px; height: 474px;
+  background: url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/images/bc-cta-card.svg") left top / 832px 474px no-repeat;
+  padding: 74px 70px 0 70px; color: var(--bc-dark);
+}
+.exos-page .bc-cta__title { max-width: 561px; font-size: 36px; line-height: 46.8px; letter-spacing: -0.014em; color: #004c47; }
+.bc-cta__text { margin-top: 22px; max-width: 539px; font-size: 18px; line-height: 27px; color: var(--bc-dark); }
+.bc-cta__text strong { font-weight: 700; display: block; }
+.bc-cta .bc-btn { margin-top: 35px; }
+
+/* ---------- Footer ---------- */
+.bc-footer { background: var(--bc-dark); padding: 32px 0; }
+.bc-footer__row { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+.bc-footer__brand { display: block; flex: 0 1 528px; }
+.bc-footer__logo { width: 100%; }
+.bc-footer__right { display: flex; flex-direction: column; align-items: flex-end; gap: 32px; }
+.bc-social { display: flex; gap: 15px; list-style: none; }
+.bc-social a { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; transition: background-color .2s ease, transform .2s ease; }
+.bc-social a:hover { background: var(--bc-lime); transform: translateY(-2px); }
+.bc-social svg { width: 20px; height: 20px; display: block; }
+.bc-footer__legal { text-align: right; font-size: 14px; line-height: 21px; color: #fff; }
+.bc-footer__legal a { display: inline-block; margin-top: 22px; color: #fff; text-decoration: none; }
+.bc-footer__legal a:hover { text-decoration: underline; }
+
+/* ============================================================
+   RESPONSIVE (no mobile frame in the design, so these follow
+   the desktop system: same type scale stepped down, grids
+   collapsing 4 > 2 > 1 and 3 > 2 > 1)
+   ============================================================ */
+@media (max-width: 1280px) {
+  .bc-hero__inner { padding-left: 64px; padding-right: 64px; gap: 48px; }
+  .bc-wrap { padding: 0 48px; }
+  .bc-proof__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; margin-left: auto; margin-right: auto; }
+  .exos-page .bc-h1 br { display: none; }
+  .bc-why__photo img { width: 100%; }
+}
+@media (max-width: 1100px) {
+  .bc-caps__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bc-why__grid { grid-template-columns: 1fr; }
+  .bc-why__photo { margin-top: 0; max-width: 460px; }
+  .bc-cta { min-height: 0; padding-top: 360px; background-position: 30% top; background-size: auto 520px; }
+  .bc-cta__card { position: relative; width: 100%; height: auto; background: #fff; border-radius: 48px 0 0 0; padding: 56px 48px 64px; }
+  .bc-footer__brand { flex-basis: 360px; }
+}
+@media (max-width: 900px) {
+  .exos-page.bc-page { padding-top: 56px !important; }
+  .bc-header { height: 56px; padding: 0 24px; }
+  .bc-hero { min-height: 0; background-position: 72% top; }
+  .bc-hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,35,35,.55) 0%, rgba(0,35,35,.92) 45%, #002323 70%); }
+  .bc-hero__inner { position: relative; flex-direction: column; gap: 40px; padding: 48px 24px 64px; }
+  .bc-hero__copy, .bc-hero__form { flex: none; width: 100%; max-width: 560px; margin-left: 0; }
+  .bc-hero__form { padding-top: 0; }
+  .exos-page .bc-h1 { margin-top: 20px; font-size: 38px !important; line-height: 1.18 !important; }
+  .exos-page .bc-h1 .bc-accent { font-size: 44px; line-height: 1.18; }
+  .exos-page .bc-h1 br { display: none; }
+  .bc-hero__lede { margin-top: 24px; font-size: 18px; line-height: 28px; }
+  .bc-hero .exos-form-slot input[type="text"], .bc-hero .exos-form-slot input[type="email"], .bc-hero .exos-form-slot input[type="tel"], .bc-hero .exos-form-slot select { height: 46px !important; font-size: 16px !important; }
+
+  .bc-wrap { padding: 0 24px; }
+  .bc-logos { padding: 48px 0; }
+  .exos-page .bc-logos__title { font-size: 28px; line-height: 1.25; }
+  .bc-logos__row { margin-top: 32px; gap: 28px 20px; }
+  .bc-logos__row li { padding: 0; flex: 0 0 calc(50% - 10px); display: flex; justify-content: center; }
+  .bc-logos__row img { max-height: 44px; }
+
+  .bc-proof, .bc-caps, .bc-quotes { padding: 72px 0; }
+  .bc-why { padding: 72px 0 48px; }
+  .exos-page .bc-h2, .exos-page .bc-caps__title, .exos-page .bc-why__title, .exos-page .bc-quotes__title { font-size: 36px !important; line-height: 1.2 !important; }
+  .exos-page .bc-h2 .bc-accent, .exos-page .bc-why__title .bc-accent { font-size: 42px; }
+  .exos-page .bc-caps__title .bc-accent { font-size: 46px; line-height: 1; }
+  .bc-proof__sub { font-size: 18px; line-height: 28px; }
+  .bc-proof__grid, .bc-caps__grid, .bc-quotes__grid { margin-top: 40px; }
+  .bc-caps__deco { width: 72px; }
+  .bc-cap { padding: 28px 28px 32px; }
+  .bc-why__list { margin-top: 40px; gap: 36px; }
+  .bc-why__item { grid-template-columns: 72px 1fr; gap: 20px; }
+  .bc-why__item img { width: 72px; }
+  .exos-page .bc-why__h { font-size: 22px; line-height: 1.35; }
+  .bc-why__p { font-size: 16px; line-height: 25px; }
+  .bc-quotes__grid { grid-template-columns: 1fr; gap: 20px; }
+  .bc-quote { padding: 28px 24px; gap: 28px; }
+  .bc-cta { padding-top: 260px; background-size: auto 400px; }
+  .bc-cta__card { border-radius: 32px 0 0 0; padding: 44px 24px 56px; }
+  .exos-page .bc-cta__title { font-size: 28px !important; line-height: 1.25 !important; }
+  .bc-cta__text { font-size: 16px; line-height: 25px; }
+  .bc-footer { padding: 40px 0; }
+  .bc-footer__row { flex-direction: column; gap: 28px; }
+  .bc-footer__brand { flex: none; width: 240px; }
+  .bc-footer__right { align-items: flex-start; gap: 20px; }
+  .bc-footer__legal { text-align: left; }
+  .bc-footer__legal a { margin-top: 8px; }
+}
+@media (max-width: 640px) {
+  .bc-proof__grid, .bc-caps__grid { grid-template-columns: 1fr; }
+  .bc-stat__body { padding: 24px; }
+  .exos-page .bc-stat__label { font-size: 26px; line-height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bc-page *, .bc-page *::before, .bc-page *::after { transition: none !important; }
+}
+
+.bc-stat__num, .bc-stat__label { display: block; }
+#exos-form-card { scroll-margin-top: 84px; }
+@media (max-width: 900px) { #exos-form-card { scroll-margin-top: 72px; } }
+
+</style>

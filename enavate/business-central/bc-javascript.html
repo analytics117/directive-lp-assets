@@ -1,0 +1,400 @@
+<script>
+(function () {
+
+  /* ==========================================================
+     ENAVATE | DYNAMICS 365 BUSINESS CENTRAL (Directive kit)
+     Step carousel, FAQ accordion, sticky header, CTA scroll,
+     two-step form, and Unbounce section auto-height.
+     Only the STEPS copy near the top is meant to be edited.
+     ========================================================== */
+
+  /* ============================================================
+     EDIT THESE THREE LINES PER CLIENT. NOTHING ELSE.
+     ============================================================ */
+  var HEADER_OFFSET   = 60;  /* height of your sticky header, desktop */
+  var HEADER_OFFSET_M = 56;  /* height of your sticky header, mobile  */
+  /* Field IDs that belong on STEP 1 of the form. Everything else
+     lands on step 2 automatically. */
+  var STEP1_FIELDS = ['first', 'last', 'email'];
+  /* The approved design is a ONE-STEP form. Set to true to split it into two
+     steps using STEP1_FIELDS above. */
+  var TWO_STEP = false;
+  /* Text on the form's submit button */
+  var SUBMIT_LABEL = 'Get in Touch';
+  /* ========================= END EDITS ========================= */
+
+
+  /* Make sure a viewport tag exists. Without one, phones render
+     at ~980px wide and no media query fires. */
+  (function ensureViewport() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') { fn(); }
+    else { document.addEventListener('DOMContentLoaded', fn); }
+  }
+
+  /* Grows the Unbounce section to fit the page */
+  function fitPage() {
+    var el = document.querySelector('.exos-page');
+    if (!el) return;
+    var wrap = el.closest('[id^="lp-code"]');
+    var block = el.closest('.lp-pom-block');
+    if (wrap) { wrap.style.height = 'auto'; }
+    if (!block) return;
+    var h = el.scrollHeight;
+    block.style.height = h + 'px';
+    var content = block.querySelector('.lp-pom-block-content');
+    if (content) { content.style.height = h + 'px'; }
+  }
+
+  /* ---------- Implementation step carousel ---------- */
+  function initSteps() {
+    var copy  = document.querySelectorAll('.exos-step-panel');
+    var imgs  = document.querySelectorAll('.exos-step-img-panel');
+    var fills = document.querySelectorAll('.exos-step-fill');
+    var segs  = document.querySelectorAll('.exos-prog-seg');
+    var prev  = document.querySelector('.exos-step-prev');
+    var next  = document.querySelector('.exos-step-next');
+    var label = document.querySelector('.exos-step-current');
+    if (!copy.length) return;
+
+    var i = 1, total = copy.length;
+
+    function show(n) {
+      i = ((n - 1 + total) % total) + 1;
+      [copy, imgs, fills].forEach(function (group) {
+        group.forEach(function (el) {
+          el.classList.toggle('is-active', el.getAttribute('data-step') === String(i));
+        });
+      });
+      if (label) { label.textContent = i; }
+      setTimeout(fitPage, 60);
+    }
+
+    if (prev) { prev.addEventListener('click', function () { show(i - 1); }); }
+    if (next) { next.addEventListener('click', function () { show(i + 1); }); }
+    segs.forEach(function (seg, k) { seg.addEventListener('click', function () { show(k + 1); }); });
+
+    show(1);
+
+    imgs.forEach(function (panel) {
+      var im = panel.querySelector('img');
+      if (im && im.src && im.src.indexOf('STEP_') === -1) { var pre = new Image(); pre.src = im.src; }
+    });
+  }
+
+  /* ---------- FAQ accordion ---------- */
+  function initFaq() {
+    var items = document.querySelectorAll('.exos-faq-item');
+    if (!items.length) return;
+
+    function panelFor(n) { return document.querySelector('.exos-faq-answer[data-faq="' + n + '"]'); }
+
+    function close(item) {
+      item.classList.remove('is-open');
+      var p = panelFor(item.getAttribute('data-faq'));
+      if (p) { p.style.maxHeight = null; }
+    }
+    function open(item) {
+      item.classList.add('is-open');
+      var p = panelFor(item.getAttribute('data-faq'));
+      if (p) { p.style.maxHeight = p.scrollHeight + 'px'; }
+    }
+
+    items.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var wasOpen = item.classList.contains('is-open');
+        items.forEach(close);
+        if (!wasOpen) { open(item); }
+        setTimeout(fitPage, 340);
+      });
+    });
+
+    open(items[0]);
+  }
+
+  /* ---------- CTAs scroll to the form ----------
+     Delegated off the document so it cannot be broken by binding order,
+     by elements appearing late, or by a failure elsewhere in the script. */
+  /* Brings the top of the form card to the top of the viewport, allowing
+     for the sticky header. Used by the CTAs and by the step switch. */
+  function scrollToCard() {
+    var card = document.getElementById('exos-form-card')
+            || document.getElementById('exos-form');
+    if (!card) return;
+
+    /* scrollIntoView finds whichever element actually scrolls, so it works
+       even when Unbounce's wrappers change the scrolling context.
+       The offset comes from scroll-margin-top in the stylesheet. */
+    if (card.scrollIntoView) {
+      try {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      } catch (err) {
+        card.scrollIntoView(true);
+        return;
+      }
+    }
+
+    var offset = window.innerWidth < 900 ? HEADER_OFFSET_M : HEADER_OFFSET;
+    var top = card.getBoundingClientRect().top + window.pageYOffset - offset - 24;
+    window.scrollTo(0, top < 0 ? 0 : top);
+  }
+
+  function initScroll() {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.exos-cta, a[href="#exos-form"], a[href="#get-started"]') : null;
+      if (!btn) return;
+      e.preventDefault();
+
+      var target = document.getElementById('exos-form-card')
+                || document.getElementById('exos-form')
+                || document.getElementById('get-started');
+      if (!target) { console.warn('Enavate BC: scroll target not found'); return; }
+
+      /* scrollIntoView respects scroll-margin-top and works even when
+         html/body overflow rules change which element actually scrolls. */
+      scrollToCard();
+    }, false);
+
+    document.querySelectorAll('.exos-cta').forEach(function (b) { b.style.cursor = 'pointer'; });
+    console.log('Enavate BC: scroll ready, ' + document.querySelectorAll('.exos-cta').length + ' CTAs');
+  }
+
+  /* ---------- Hidden Unbounce form (lead capture + tracking) ---------- */
+  function placeForm() {
+    var slot = document.querySelector('.exos-form-slot');
+    if (!slot) return false;
+    var form = document.querySelector('.lp-pom-form, .hs-form');
+    if (!form) return false;
+    var widget = form.closest('[id^="lp-pom-form"]') || form.closest('[id^="lp-pom-box"]') || form;
+    if (slot.contains(widget)) return true;
+    slot.appendChild(widget);
+    buildSteps();
+    fitPage();
+    return true;
+  }
+
+  function watchForForm() {
+    if (placeForm()) return;
+    var obs = new MutationObserver(function () { if (placeForm()) { obs.disconnect(); } });
+    obs.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { obs.disconnect(); }, 10000);
+  }
+
+  /* ---------- Unbounce's real form, grouped into two steps ----------
+     No relaying, no simulated clicks. Unbounce's own button submits its
+     own form, so lead capture and conversion tracking are untouched.
+     All we do is move it into the card, restyle it, and hide step two
+     until Continue is pressed. */
+
+
+  function fieldName(fieldEl) {
+    if (!fieldEl) return '';
+    var input = fieldEl.matches && fieldEl.matches('input, select, textarea')
+              ? fieldEl : fieldEl.querySelector('input, select, textarea');
+    return input ? (input.name || input.id || '') : '';
+  }
+
+  /* Unbounce sets pixel widths and absolute positions inline. Strip them
+     so our stylesheet can lay the fields out full width. */
+  function unstyle(root) {
+    [].forEach.call(root.querySelectorAll('*'), function (el) {
+      ['position', 'top', 'left', 'right', 'bottom', 'height', 'min-height',
+       'max-height', 'width', 'min-width', 'max-width', 'transform', 'float',
+       'white-space', 'overflow', 'text-overflow'].forEach(function (p) {
+        el.style.removeProperty(p);
+      });
+    });
+
+    /* Unbounce also writes width rules into its own stylesheet, and the
+       field containers are plain divs the stylesheet cannot always reach.
+       Force width inline on every layout element instead. */
+    var LAYOUT = ['DIV', 'FORM', 'FIELDSET', 'LABEL', 'INPUT', 'SELECT', 'TEXTAREA', 'P'];
+    [].forEach.call(root.querySelectorAll('*'), function (el) {
+      if (LAYOUT.indexOf(el.tagName) === -1) return;
+      if (el.type === 'hidden') return;
+      el.style.setProperty('width', '100%', 'important');
+      el.style.setProperty('max-width', '100%', 'important');
+      el.style.setProperty('min-width', '0', 'important');
+      el.style.setProperty('box-sizing', 'border-box', 'important');
+      if (el.tagName !== 'INPUT' && el.tagName !== 'SELECT' && el.tagName !== 'TEXTAREA') {
+        el.style.setProperty('position', 'static', 'important');
+      }
+      if (el.tagName === 'LABEL') {
+        el.style.setProperty('white-space', 'normal', 'important');
+        el.style.setProperty('overflow', 'visible', 'important');
+      }
+    });
+    root.style.setProperty('width', '100%', 'important');
+  }
+
+  /* Design has no visible labels: copy each label into its field's
+     placeholder and aria-label, then hide the label. */
+  function labelsToPlaceholders(root) {
+    [].forEach.call(root.querySelectorAll('input, select, textarea'), function (inp) {
+      if (inp.type === 'hidden' || inp.type === 'submit' || inp.type === 'button' ||
+          inp.type === 'checkbox' || inp.type === 'radio') return;
+      var lab = (inp.id && root.querySelector('label[for="' + inp.id + '"]')) ||
+                (inp.closest('.lp-pom-form-field') || inp.parentElement).querySelector('label');
+      if (!lab || lab.classList.contains('error')) return;
+      var text = (lab.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!text) return;
+      if (inp.tagName !== 'SELECT' && !inp.getAttribute('placeholder')) { inp.setAttribute('placeholder', text); }
+      if (!inp.getAttribute('aria-label')) { inp.setAttribute('aria-label', text.replace(/\*$/, '').trim()); }
+      if (inp.tagName !== 'SELECT') { lab.style.setProperty('display', 'none', 'important'); }
+    });
+  }
+
+  function btnLabel(el) {
+    return (el.value || el.textContent || '').trim().toLowerCase();
+  }
+
+  function updateChrome(step) {
+    document.querySelectorAll('.exos-fhead').forEach(function (h) {
+      h.classList.toggle('is-active', h.getAttribute('data-fhead') === String(step));
+    });
+    var counter = document.querySelector('.exos-form-step');
+    if (counter) { counter.textContent = step; }
+    document.querySelectorAll('.exos-form-bar').forEach(function (bar, i) {
+      bar.style.background = (i < step) ? '#002323' : '#E5FCFB';
+    });
+    fitPage();
+  }
+
+  function buildSteps() {
+    var slot = document.querySelector('.exos-form-slot');
+    if (!slot || slot.getAttribute('data-built')) return;
+    var form = slot.querySelector('form');
+    if (!form) return;
+    /* Find each field's container. Unbounce usually uses .lp-pom-form-field,
+       but fall back to walking up from each input if that class is absent. */
+    var fields = [].slice.call(slot.querySelectorAll('.lp-pom-form-field'));
+    if (!fields.length) {
+      var inputs = slot.querySelectorAll('input, select, textarea');
+      [].forEach.call(inputs, function (inp) {
+        if (inp.type === 'hidden' || inp.type === 'submit' || inp.type === 'button') return;
+        var box = inp.parentElement;
+        while (box && box !== slot && box.tagName !== 'FORM'
+               && !box.querySelector('label')) { box = box.parentElement; }
+        if (!box || box === slot || box.tagName === 'FORM') { box = inp.parentElement; }
+        if (fields.indexOf(box) === -1) { fields.push(box); }
+      });
+    }
+    console.log('Enavate BC form: ' + fields.length + ' field containers found');
+    if (!fields.length) { console.warn('Enavate BC form: no fields to group'); return; }
+    slot.setAttribute('data-built', '1');
+
+    unstyle(slot);
+    labelsToPlaceholders(slot);
+
+    if (!TWO_STEP) {
+      /* One step: keep Unbounce's own submit, relabel it, hide any extras */
+      var first = null;
+      [].forEach.call(slot.querySelectorAll('.lp-pom-button, button, input[type="submit"]'), function (b) {
+        var wrap = b.closest('[id^="lp-pom-button"]') || b;
+        if (!first) {
+          first = b;
+          if (b.tagName === 'INPUT') { b.value = SUBMIT_LABEL; }
+          else { var l = b.querySelector('.label'); if (l) { l.textContent = SUBMIT_LABEL; } else { b.textContent = SUBMIT_LABEL; } }
+        } else { wrap.style.setProperty('display', 'none', 'important'); }
+      });
+      fitPage();
+      return;
+    }
+
+    /* Group the fields into our two steps */
+    [].forEach.call(fields, function (f) {
+      var n = fieldName(f).toLowerCase();
+      var isStep1 = STEP1_FIELDS.some(function (k) { return n.indexOf(k) > -1; });
+      f.classList.add(isStep1 ? 'exos-s1' : 'exos-s2');
+    });
+
+    /* Sort out the buttons: hide leftover step buttons, keep the real submit */
+    var submitBtn = null;
+    var buttons = slot.querySelectorAll('.lp-pom-button, button, input[type="submit"], input[type="button"]');
+    [].forEach.call(buttons, function (b) {
+      var label = btnLabel(b);
+      var wrap = b.closest('[id^="lp-pom-button"]') || b;
+      var isStepBtn = /previous|next|continue|back/.test(label);
+      if (isStepBtn) {
+        wrap.style.setProperty('display', 'none', 'important');
+        return;
+      }
+      if (!submitBtn) {
+        submitBtn = b;
+        wrap.classList.add('exos-s2', 'exos-ubsubmit');
+        if (b.value !== undefined && b.tagName === 'INPUT') { b.value = SUBMIT_LABEL; }
+        else { b.textContent = SUBMIT_LABEL; }
+      } else {
+        wrap.style.setProperty('display', 'none', 'important');
+      }
+    });
+
+    /* Our Continue button only switches steps */
+    var cont = document.createElement('button');
+    cont.type = 'button';
+    cont.className = 'exos-fbtn exos-s1';
+    cont.innerHTML = '<span>Continue</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12h13M12.5 6l6 6-6 6" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    form.appendChild(cont);
+
+    var back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'exos-fback exos-s2';
+    back.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M19 12H6M11.5 6l-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Back</span>';
+    form.appendChild(back);
+
+    function show(step, scroll) {
+      slot.setAttribute('data-step', step);
+      updateChrome(step);
+      if (scroll) { setTimeout(scrollToCard, 60); }
+    }
+
+    cont.addEventListener('click', function () {
+      var firstBad = null;
+      [].forEach.call(slot.querySelectorAll('.exos-s1 input, .exos-s1 select, .exos-s1 textarea'), function (f) {
+        if (f.required && !f.value && !firstBad) { firstBad = f; }
+      });
+      if (firstBad) { firstBad.classList.add('exos-invalid'); firstBad.focus(); return; }
+      show(2, true);
+    });
+
+    back.addEventListener('click', function () { show(1, true); });
+
+    show(1);
+  }
+
+
+  function safely(name, fn) {
+    try { fn(); }
+    catch (err) { console.error('Enavate BC: ' + name + ' failed', err); }
+  }
+
+  ready(function () {
+    safely('scroll', initScroll);
+    safely('form watcher', watchForForm);
+    safely('form steps', buildSteps);
+    safely('steps', initSteps);
+    safely('faq', initFaq);
+    safely('fitPage', fitPage);
+  });
+
+  window.addEventListener('load', function () { placeForm(); fitPage(); });
+  /* Unbounce re-applies its own layout on resize and orientation change,
+     so strip it again each time. */
+  function reapplyUnstyle() {
+    var slot = document.querySelector('.exos-form-slot');
+    if (slot && slot.getAttribute('data-built')) { unstyle(slot); labelsToPlaceholders(slot); }
+    fitPage();
+  }
+  window.addEventListener('resize', reapplyUnstyle);
+  window.addEventListener('orientationchange', reapplyUnstyle);
+  setTimeout(reapplyUnstyle, 800);
+  setTimeout(reapplyUnstyle, 2000);
+
+})();
+</script>

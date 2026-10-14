@@ -1,0 +1,78 @@
+<!-- ============================================================
+     FORM CONFIRMATION DIALOG ONLY
+
+     This is NOT the main page markup.
+     Goes into a Custom HTML widget placed on the CONFIRMATION
+     DIALOG canvas in Unbounce, not on the page canvas.
+
+     Styles and fonts are self-contained here, because the dialog
+     does not inherit the page stylesheet.
+
+     IMPORTANT: size the widget at least 520px wide in the builder,
+     or the copy wraps early and looks smaller than it is.
+     ============================================================ -->
+
+<div class="exos-thanks">
+  <div class="exos-thanks-mark">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true"><path d="M4 12.5l5.5 5.5L20 7" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  </div>
+
+  <h2>Thanks, we’ve got it</h2>
+
+  <p>Someone from the Enavate team will reach out to talk through Business Central and your next steps.</p>
+
+  <p class="exos-thanks-meta">You can close this window.</p>
+</div>
+
+<style>
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-700.woff2") format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'BC Plus Jakarta Sans';src:url("https://cdn.jsdelivr.net/gh/GITHUB-OWNER/GITHUB-REPO@main/enavate/business-central/fonts/bc-plus-jakarta-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+.exos-thanks { --font-heading: 'BC Plus Jakarta Sans', system-ui, sans-serif; --font-body: 'BC Plus Jakarta Sans', system-ui, sans-serif; --brand-dark: #002323; --brand-accent: #00BFB2; }
+
+.exos-thanks {
+  font-family: var(--font-body);
+  width: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.exos-thanks .exos-thanks-mark {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--brand-accent, #00BFB2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 0 26px;
+}
+
+/* Same as the form card headline */
+.exos-thanks h2 {
+  font-family: var(--font-heading) !important;
+  font-size: 40px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--brand-dark, #002323) !important;
+  margin: 0 0 14px !important;
+  white-space: nowrap;
+}
+
+/* Same as the form card subhead */
+.exos-thanks p {
+  font-family: var(--font-body) !important;
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  color: var(--brand-dark, #002323) !important;
+  margin: 0 !important;
+  max-width: 44ch;
+}
+
+.exos-thanks .exos-thanks-meta {
+  color: #8A8A9C !important;
+  margin-top: 20px !important;
+}
+
+@media (max-width: 600px) {
+  .exos-thanks h2 { font-size: 26px !important; white-space: normal; }
+  .exos-thanks p { font-size: 16px !important; }
+  .exos-thanks .exos-thanks-mark { width: 46px; height: 46px; margin-bottom: 18px; }
+}
+</style>
