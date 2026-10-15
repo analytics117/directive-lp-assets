@@ -369,6 +369,65 @@
   }
 
 
+  /* ---------- Enavate BC: proof cards fade in one by one, numbers count up from 0 ----------
+     Cards stay fully visible if JavaScript is off, the browser is old, or the
+     visitor has reduced motion switched on. */
+  function initProofAnim() {
+    var grid = document.querySelector('.bc-proof__grid');
+    if (!grid) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+
+    var cards = [].slice.call(grid.querySelectorAll('.bc-stat'));
+    var nums = [].slice.call(grid.querySelectorAll('.bc-stat__num'));
+
+    /* Split "<6 hrs", "4,000+", "$500,000", "40+" into prefix / number / suffix */
+    var parts = nums.map(function (el) {
+      var txt = el.textContent;
+      var m = txt.match(/^([^0-9]*)([0-9][0-9,]*)(.*)$/);
+      if (!m) return null;
+      return { el: el, pre: m[1], target: parseInt(m[2].replace(/,/g, ''), 10), comma: m[2].indexOf(',') > -1, post: m[3], final: txt };
+    });
+
+    function fmt(n, comma) {
+      var s = String(n);
+      return comma ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : s;
+    }
+
+    grid.classList.add('bc-anim-ready');
+    parts.forEach(function (p) { if (p) { p.el.textContent = p.pre + '0' + p.post; } });
+
+    var done = false;
+    function run() {
+      if (done) return;
+      done = true;
+      cards.forEach(function (card, i) {
+        setTimeout(function () { card.classList.add('is-in'); }, i * 180);
+      });
+      parts.forEach(function (p, i) {
+        if (!p) return;
+        /* Small numbers (like 6) step through each value evenly so the count is visible;
+           large ones ease out. Counting starts once the card has begun fading in. */
+        var small = p.target < 100;
+        var start = null, dur = small ? 1400 : 1600, delay = i * 180 + 250;
+        function step(ts) {
+          if (start === null) start = ts;
+          var t = Math.min(1, (ts - start) / dur);
+          var eased = small ? t : 1 - Math.pow(1 - t, 3);
+          var v = small ? Math.floor(p.target * eased) : Math.round(p.target * eased);
+          p.el.textContent = p.pre + fmt(v, p.comma) + p.post;
+          if (t < 1) { requestAnimationFrame(step); } else { p.el.textContent = p.final; }
+        }
+        setTimeout(function () { requestAnimationFrame(step); }, delay);
+      });
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { run(); io.disconnect(); } });
+    }, { threshold: 0.25 });
+    io.observe(grid);
+  }
+
   function safely(name, fn) {
     try { fn(); }
     catch (err) { console.error('Enavate BC: ' + name + ' failed', err); }
@@ -380,6 +439,7 @@
     safely('form steps', buildSteps);
     safely('steps', initSteps);
     safely('faq', initFaq);
+    safely('proof animation', initProofAnim);
     safely('fitPage', fitPage);
   });
 
