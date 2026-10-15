@@ -836,7 +836,9 @@
 .bc-btn-row { display: flex; justify-content: center; margin-top: 36px; }
 
 /* ---------- Header ---------- */
-.bc-header { height: 60px; background: #fff; display: flex; align-items: center; padding: 0 36px; box-shadow: 0 1px 0 rgba(0,35,35,.06); }
+.bc-header { height: 60px; background: #fff; display: flex; align-items: center; padding: 0 36px; box-shadow: none; border: 0; }
+/* hero tucks 1px under the header so no seam shows at fractional zoom levels */
+.bc-hero { margin-top: -1px; }
 .bc-header a { display: block; line-height: 0; }
 .bc-header img { width: 161px; height: auto; }
 
@@ -858,7 +860,8 @@
 .bc-form-title { font-size: 22px; line-height: 30.8px; letter-spacing: -0.01em; color: #fff; max-width: 425px; }
 .bc-form-sub { margin-top: 17px; font-size: 16px; line-height: 24px; color: #fff; }
 .bc-form-legal { margin-top: 17px; font-size: 14px; line-height: 21px; color: #fff; }
-.bc-form-legal a { color: #fff; text-decoration: underline; }
+.bc-form-legal a { color: #00e6de; text-decoration: underline; }
+.bc-form-legal a:hover { color: var(--bc-lime); }
 
 /* The Unbounce form, restyled to the design: white fields, no visible labels */
 .bc-hero .exos-form-slot { margin-top: 17px !important; }
@@ -965,18 +968,19 @@
 .bc-cap__text { margin-top: 16px; font-size: 18px; line-height: 27px; color: #003935; }
 
 /* ---------- Benefits ---------- */
-.bc-why { background: var(--bc-dark); padding: 100px 0 60px; }
-.bc-why__grid { display: grid; grid-template-columns: minmax(0, 691px) minmax(0, 519px); justify-content: space-between; gap: 40px; align-items: start; }
+.bc-why { background: var(--bc-dark); padding: 100px 0; }
+.bc-why__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 72px; align-items: center; }
 .exos-page .bc-why__title { font-size: 52px; line-height: 62.5px; letter-spacing: -0.01em; color: #fff; }
 .exos-page .bc-why__title .bc-accent { font-size: 60px; }
-.bc-why__list { list-style: none; margin-top: 51px; display: grid; gap: 52px; }
-.bc-why__item { display: grid; grid-template-columns: 118px 1fr; gap: 30px; align-items: start; }
-.bc-why__item img { width: 118px; }
+.bc-why__list { list-style: none; display: grid; gap: 56px; }
+.bc-why__item { display: grid; grid-template-columns: 120px 1fr; gap: 36px; align-items: center; }
+.bc-why__item img { width: 120px; height: 120px; object-fit: contain; margin-top: 0; } /* all three icons share one box so they read the same size */
 .bc-why__eyebrow { font-size: 16px; line-height: 24px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--bc-teal-bright); }
-.exos-page .bc-why__h { margin-top: 13px; font-size: 28px; line-height: 39.2px; letter-spacing: -0.01em; color: #fff; }
+.exos-page .bc-why__h { margin-top: 10px; font-size: 36px; line-height: 1.4; letter-spacing: -0.012em; color: #fff; text-wrap: pretty; }
+.exos-page .bc-why__h .bc-accent { font-size: 1.1em; line-height: 1; }
 .bc-why__p { margin-top: 10px; font-size: 18px; line-height: 27px; color: #fff; }
-.bc-why__photo { margin-top: 45px; }
-.bc-why__photo img { width: 519px; }
+.bc-why__photo { margin-top: 0; }
+.bc-why__photo img { width: 440px; }
 
 /* ---------- Testimonials ---------- */
 .bc-quotes { background: linear-gradient(180deg, #002323 0%, #206d69 72%, #4cd2c9 100%); padding: 100px 0 100px; text-align: center; }
@@ -1049,7 +1053,8 @@
   .bc-hero__copy, .bc-hero__form { flex: none; width: 100%; max-width: 560px; margin-left: 0; }
   .bc-hero__form { padding-top: 0; }
   .bc-caps__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bc-why__grid { grid-template-columns: 1fr; }
+  .bc-why__grid { grid-template-columns: 1fr; gap: 56px; }
+  .exos-page .bc-why__h { font-size: 30px; }
   /* Photo switches to a landscape crop with rounded corners */
   .bc-why__photo { margin-top: 0; max-width: none; }
   .bc-why__photo img { width: 100%; height: auto; border-radius: 32px; }
@@ -1079,7 +1084,7 @@
   .exos-page .bc-logos__row img { max-height: 44px; width: auto; max-width: none !important; }
 
   .bc-proof, .bc-caps, .bc-quotes { padding: 72px 0; }
-  .bc-why { padding: 72px 0 48px; }
+  .bc-why { padding: 72px 0; }
   .exos-page .bc-h2, .exos-page .bc-caps__title, .exos-page .bc-why__title, .exos-page .bc-quotes__title { font-size: 36px !important; line-height: 1.2 !important; }
   .exos-page .bc-h2 .bc-accent, .exos-page .bc-why__title .bc-accent { font-size: 42px; }
   .exos-page .bc-caps__title .bc-accent { font-size: 45px; line-height: 1; }
@@ -1088,10 +1093,10 @@
   .bc-caps__deco { width: 72px; }
   .exos-page .bc-caps__title { padding-inline: 80px; }
   .bc-cap { padding: 28px 28px 32px; }
-  .bc-why__list { margin-top: 40px; gap: 36px; }
+  .bc-why__list { gap: 40px; }
   .bc-why__item { grid-template-columns: 72px 1fr; gap: 20px; }
-  .bc-why__item img { width: 72px; }
-  .exos-page .bc-why__h { font-size: 22px; line-height: 1.35; }
+  .bc-why__item img { width: 72px; height: 72px; }
+  .exos-page .bc-why__h { font-size: 24px; line-height: 1.35; }
   .bc-why__p { font-size: 16px; line-height: 25px; }
   .bc-quotes__grid { grid-template-columns: 1fr; gap: 20px; }
   .bc-quote { padding: 28px 24px; gap: 28px; }
@@ -1125,6 +1130,42 @@
 @media (prefers-reduced-motion: reduce) {
   .bc-page *, .bc-page *::before, .bc-page *::after { transition: none !important; }
 }
+
+/* ---------- What changes: three cards (Finance / Operations / Sales) ---------- */
+.bc-wins { background: linear-gradient(182deg, var(--bc-mint) 80%, #fff 100%); padding: 100px 0; color: #000202; }
+.exos-page .bc-wins__heading { max-width: 900px; margin: 0 auto; text-align: center; font-size: 52px; line-height: 62.4px; letter-spacing: -0.01em; color: #000; text-wrap: balance; }
+.exos-page .bc-wins__heading .bc-accent { font-size: 60px; }
+/* Same teal-to-warm family as the other accents, deepened slightly so it reads on the light mint background */
+.bc-accent--teal { background-image: linear-gradient(90deg, #00988e 0%, #00bfb2 35%, #9cc93a 72%, #ff913d 100%); }
+.bc-wins__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 56px; list-style: none; }
+.bc-win { display: flex; flex-direction: column; background: #fff; border-radius: 15px; overflow: hidden; transition: box-shadow .3s ease, transform .3s cubic-bezier(.2,.7,.2,1); }
+.bc-win:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,35,35,.08); }
+.bc-win__media { --pad: 28px; position: relative; overflow: hidden; aspect-ratio: 2 / 1; /* about 45% shorter than before */
+  background: linear-gradient(52deg, #d6ff5c 3%, #4cede7 40%, #00bfb2 67%, #004c47 123%); }
+.bc-win__media img { position: absolute; top: var(--pad); left: var(--pad); width: calc(100% - var(--pad) * 2); height: calc(100% - var(--pad)); max-width: none; object-fit: cover; object-position: left top; border-radius: 8px 8px 0 0; }
+.bc-win__body { padding: 32px 32px 36px; }
+.bc-win__eyebrow { font-size: 16px; line-height: 24px; font-weight: 600; text-transform: uppercase; color: var(--bc-teal); }
+.exos-page .bc-win__title { margin-top: 12px; font-size: 28px; line-height: 36px; letter-spacing: -0.01em; color: #000202; text-wrap: balance; }
+.bc-win__text { margin-top: 16px; font-size: 16px; line-height: 24px; color: #000; }
+@media (max-width: 1100px) {
+  .bc-wins__grid { grid-template-columns: 1fr; max-width: 640px; margin-left: auto; margin-right: auto; }
+  .bc-win { display: grid; grid-template-columns: 2fr 3fr; }
+  .bc-win__media { aspect-ratio: auto; min-height: 200px; --pad: 24px; }
+  .bc-win__body { align-self: center; }
+}
+@media (max-width: 900px) {
+  .bc-wins { padding: 72px 0; }
+  .exos-page .bc-wins__heading { font-size: 36px !important; line-height: 1.2 !important; }
+  .exos-page .bc-wins__heading .bc-accent { font-size: 42px; }
+  .bc-wins__grid { margin-top: 40px; gap: 20px; }
+}
+@media (max-width: 640px) {
+  .bc-win { display: flex; }
+  .bc-win__media { aspect-ratio: 2 / 1; min-height: 0; --pad: 20px; }
+  .bc-win__body { padding: 24px 24px 28px; }
+  .exos-page .bc-win__title { font-size: 24px; line-height: 1.3; }
+}
+@media (hover: none) { .bc-win:hover { transform: none; } }
 
 /* Proof cards: fade up one by one (the class is only added by the script) */
 .bc-proof__grid.bc-anim-ready .bc-stat { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
