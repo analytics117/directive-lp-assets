@@ -1,0 +1,482 @@
+<script>
+/* ==========================================================
+   AUDIOHOOK VS. SPOTIFY ADS (try.audiohook.com/vs-spotify-ads)
+   Paste into: Javascripts panel, placement BEFORE BODY END TAG.
+   Keep the <script> tags.
+   Does: viewport tag, page height fit, native-form placement and
+   styling hooks, CTA scroll, scroll reveal, stat count-up,
+   testimonial carousel, pause-when-off-screen.
+   Only the settings under EDIT HERE are meant to be edited.
+   ========================================================== */
+(function () {
+
+  /* ---------------- EDIT HERE ---------------- */
+  var TESTIMONIAL_MS = 5000;   /* testimonial auto-advance */
+  var COUNT_MS       = 1200;   /* stat count-up length */
+  var TERMS_URL      = 'https://audiohook.com/terms';
+  var PRIVACY_URL    = 'https://audiohook.com/privacy';
+  var BUTTON_LABEL   = 'Talk to an expert';
+  /* Native form field IDs, set in the Unbounce form builder.
+     All four are mandatory. Work Email can be either "email" or
+     "work_email" (the /competitor page uses work_email). */
+  var FIELDS = [['first_name'], ['last_name'], ['email', 'work_email'], ['company_name']];
+  var AUTOCOMPLETE = { first_name: 'given-name', last_name: 'family-name', email: 'email', work_email: 'email', company_name: 'organization' };
+  /* ------------------------------------------- */
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO  = 'IntersectionObserver' in window;
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') { fn(); }
+    else { document.addEventListener('DOMContentLoaded', fn); }
+  }
+  function safely(name, fn) {
+    try { fn(); } catch (err) { if (window.console) { console.error('spt: ' + name + ' failed', err); } }
+  }
+
+  /* Without a viewport tag phones render at ~980px and no media query fires */
+  (function ensureViewport() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+
+  /* ---------- Page height ----------
+     Measures where the page really ends and writes it to a CSS variable.
+     The stylesheet applies it with !important, so Unbounce rewriting its
+     own heights cannot bring a white bar back below the footer. */
+  function fitPage() {
+    var el = document.querySelector('.spt-page');
+    if (!el) return;
+    var wrap  = el.closest('[id^="lp-code"]');
+    var block = el.closest('.lp-pom-block');
+    var root  = el.closest('#lp-pom-root, .lp-pom-root');
+    if (wrap) { wrap.style.setProperty('height', 'auto', 'important'); }
+    var h = Math.ceil(el.getBoundingClientRect().height);
+    if (!h) return;
+    /* offset of the page inside the Unbounce block (widget position) */
+    var top = 0;
+    if (block) { top = Math.max(0, Math.round(el.getBoundingClientRect().top - block.getBoundingClientRect().top)); }
+    var total = h + top;
+    document.documentElement.style.setProperty('--spt-h', total + 'px');
+    if (root)  { root.classList.add('spt-fit'); }
+    if (block) { block.classList.add('spt-fit-block'); }
+    var fitted = block ? block.closest('#lp-pom-root, .lp-pom-root') : null;
+    if (fitted) { fitted.classList.add('spt-fit'); }
+  }
+
+  /* ---------- CTAs scroll to the form ----------
+     Delegated from the document so late-added elements still work. */
+  function scrollToForm() {
+    var card = document.getElementById('talk');
+    if (!card) return;
+    try { card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+    catch (err) { card.scrollIntoView(true); }
+    setTimeout(function () {
+      var first = card.querySelector('input[type="text"], input[type="email"]');
+      if (first && first.focus) { try { first.focus({ preventScroll: true }); } catch (e) { first.focus(); } }
+    }, reduce ? 0 : 650);
+  }
+  function initScroll() {
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('.spt-cta-link, a[href="#talk"]') : null;
+      if (!a) return;
+      e.preventDefault();
+      scrollToForm();
+    }, false);
+  }
+
+  /* ---------- Native Unbounce form ----------
+     Unbounce's own form is moved into the card and restyled by the
+     stylesheet. Nothing is relayed or simulated: its own button submits
+     its own form, so lead capture and conversion tracking are untouched. */
+  function unstyle(root) {
+    [].forEach.call(root.querySelectorAll('*'), function (el) {
+      ['position', 'top', 'left', 'right', 'bottom', 'height', 'min-height', 'max-height',
+       'width', 'min-width', 'max-width', 'transform', 'float', 'white-space',
+       'text-overflow', 'overflow'].forEach(function (p) { el.style.removeProperty(p); });
+    });
+  }
+
+  function findForm() { return document.querySelector('.lp-pom-form, .hs-form'); }
+
+  function placeForm() {
+    var slot = document.querySelector('.spt-form-slot');
+    if (!slot) return false;
+    var form = findForm();
+    if (!form) return false;
+    if (slot.contains(form)) return true;
+    var widget = form.closest('[id^="lp-pom-form"]') || form.closest('[id^="lp-pom-box"]') || form;
+    slot.appendChild(widget);
+    buildForm(slot);
+    fitPage();
+    return true;
+  }
+
+  function watchForForm() {
+    if (placeForm()) return;
+    var obs = new MutationObserver(function () { if (placeForm()) { obs.disconnect(); } });
+    obs.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { obs.disconnect(); }, 10000);
+  }
+
+  function labelFor(slot, input) {
+    var lab = input.id ? slot.querySelector('label[for="' + input.id + '"]') : null;
+    return lab || input.closest('label') || (input.closest('.lp-pom-form-field') || document).querySelector('label');
+  }
+
+  function buildForm(slot) {
+    if (slot.getAttribute('data-built')) return;
+    var form = slot.querySelector('form');
+    if (!form) return;
+    slot.setAttribute('data-built', '1');
+    unstyle(slot);
+
+    /* Four mandatory fields: asterisk on the label, required on the input */
+    FIELDS.forEach(function (ids) {
+      var input = null, id = ids[0];
+      for (var n = 0; n < ids.length && !input; n++) {
+        input = slot.querySelector('#' + ids[n] + ', [name="' + ids[n] + '"]');
+        if (input) { id = ids[n]; }
+      }
+      if (!input) { if (window.console) { console.warn('spt: form field "' + ids.join('" or "') + '" not found'); } return; }
+      input.setAttribute('required', 'required');
+      input.setAttribute('aria-required', 'true');
+      if (AUTOCOMPLETE[id]) { input.setAttribute('autocomplete', AUTOCOMPLETE[id]); }
+      var lab = labelFor(slot, input);
+      if (lab) {
+        /* "First Name *" (Unbounce adds a space) becomes "First Name*" */
+        var holder = lab.querySelector('.label-style, .label') || lab;
+        var t = holder.textContent.replace(/[\s\u00a0]*\*?[\s\u00a0]*$/, '');
+        holder.textContent = t + '*';
+      }
+    });
+
+    /* Optional required checkbox with id "terms_agreement":
+       its label becomes the Terms and Privacy line. Without it, a
+       consent note shows under the button. */
+    var cb = slot.querySelector('#terms_agreement, [name="terms_agreement"]');
+    if (cb && cb.type === 'checkbox') {
+      cb.setAttribute('required', 'required');
+      var field = cb.closest('.lp-pom-form-field') || cb.parentElement;
+      field.classList.add('spt-consent-field');
+      var lab = labelFor(slot, cb);
+      if (lab) {
+        var txt = document.createElement('span');
+        txt.className = 'spt-consent-text';
+        txt.innerHTML = 'I’ve read and agree to the <a href="' + TERMS_URL + '" target="_blank" rel="noopener">Terms of Service</a> and <a href="' + PRIVACY_URL + '" target="_blank" rel="noopener">Privacy Policy</a>.';
+        if (lab.contains(cb)) {
+          [].slice.call(lab.childNodes).forEach(function (n) { if (n !== cb) { lab.removeChild(n); } });
+          lab.appendChild(txt);
+        } else {
+          lab.innerHTML = '';
+          lab.appendChild(txt);
+          lab.insertBefore(cb, txt);
+        }
+        /* links inside the label must not toggle the checkbox */
+        [].forEach.call(txt.querySelectorAll('a'), function (a) {
+          a.addEventListener('click', function (ev) { ev.stopPropagation(); });
+        });
+      }
+    }
+
+    /* Submit button: keep the real one, label it, hide any step buttons */
+    var submit = null;
+    [].forEach.call(slot.querySelectorAll('.lp-pom-button, button, input[type="submit"], input[type="button"]'), function (b) {
+      var label = (b.value || b.textContent || '').trim().toLowerCase();
+      var wrap = b.closest('[id^="lp-pom-button"]') || b;
+      if (/previous|next|continue|back/.test(label)) { wrap.style.setProperty('display', 'none', 'important'); return; }
+      if (submit) { wrap.style.setProperty('display', 'none', 'important'); return; }
+      submit = b;
+      var span = b.querySelector ? b.querySelector('.label') : null;
+      if (b.tagName === 'INPUT') { b.value = BUTTON_LABEL; }
+      else if (span) { span.textContent = BUTTON_LABEL; }
+      else { b.textContent = BUTTON_LABEL; }
+    });
+
+    /* Without the checkbox, the consent line sits just above the button (design) */
+    if (!cb && !slot.querySelector('.spt-consent-note')) {
+      var note = document.createElement('p');
+      note.className = 'spt-consent-note';
+      note.innerHTML = 'By submitting, you agree to our <a href="' + TERMS_URL + '" target="_blank" rel="noopener">Terms of Service</a> and <a href="' + PRIVACY_URL + '" target="_blank" rel="noopener">Privacy&nbsp;Policy</a>.';
+      var btnWrap = submit ? (submit.closest('[id^="lp-pom-button"]') || submit) : null;
+      if (btnWrap && btnWrap.parentNode) { btnWrap.parentNode.insertBefore(note, btnWrap); }
+      else { slot.appendChild(note); }
+    }
+
+    /* red outline on a field the browser refuses to submit */
+    form.addEventListener('invalid', function (ev) {
+      var t = ev.target;
+      if (t && t.classList) { t.classList.add('spt-invalid'); }
+    }, true);
+    form.addEventListener('input', function (ev) {
+      var t = ev.target;
+      if (t && t.classList) { t.classList.remove('spt-invalid'); }
+    }, true);
+  }
+
+  /* Unbounce re-applies its own layout on resize and rotation, so strip it again */
+  function reapply() {
+    var slot = document.querySelector('.spt-form-slot');
+    if (slot && slot.getAttribute('data-built')) { unstyle(slot); }
+    fitPage();
+  }
+
+  /* ---------- Hero: podcast covers drift bottom-left to top-right ----------
+     Same canvas drift as the podcast-ads-cost page. Pauses when the hero is
+     off screen or the tab is hidden; holds still for reduced motion; not
+     drawn on phones. Layout list: [cover, x, y, size, depth] on a 1536 x 600 grid. */
+  var ASSETS = 'https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/audiohook/vs-spotify-ads';
+  var L = [
+    ["this-past-weekend",87,103,90,1],["giggly-squad",222,128,90,1],["office-ladies",180,170,95,0],["terribly-famous",400,128,125,2],
+    ["planet-money",603,178,135,2],["the-daily",733,288,175,2],["morbid",765,128,75,1],["magnus-archives",810,90,80,0],
+    ["rich-eisen-show",946,128,125,2],["office-ladies",888,242,120,0],["serial",1080,175,75,1],["diary-of-a-ceo",1205,105,55,1],
+    ["good-hang",1160,128,70,0],["suspect",1375,103,120,2],["espn-radio",70,295,125,2],["dateline-nbc",242,268,80,1],
+    ["call-her-daddy",316,318,90,1],["wait-wait",457,296,80,1],["good-hang",557,393,125,2],["dr-death",960,316,75,1],
+    ["stuff-you-should-know",1115,295,125,2],["magnus-archives",1240,240,75,0],["z100-new-york",1460,258,125,2],["armchair-expert",1176,377,90,1],
+    ["mel-robbins",1320,353,80,0],["huberman-lab",1430,420,90,1],["serial",1357,470,80,0],["this-american-life",398,480,125,2],
+    ["youre-wrong-about",240,410,75,0],["the-moth",105,447,90,0],["giggly-squad",172,485,90,1],["mel-robbins",790,460,110,2],
+    ["the-moth",860,430,90,0],["youre-wrong-about",1005,460,125,2],["crime-junkie",1193,513,95,1],["welcome-to-night-vale",655,545,95,1]
+  ];
+  var REF_W = 1536, REF_H = 600;
+  var NAMES = ["this-past-weekend","giggly-squad","terribly-famous","planet-money","the-daily","morbid","rich-eisen-show","office-ladies","serial","diary-of-a-ceo","suspect","espn-radio","dateline-nbc","call-her-daddy","wait-wait","good-hang","this-american-life","dr-death","stuff-you-should-know","magnus-archives","z100-new-york","armchair-expert","mel-robbins","youre-wrong-about","crime-junkie","huberman-lab","welcome-to-night-vale","the-moth"];
+  var DEPTH = { 0: { blur: 7, alpha: .55, spd: .55 }, 1: { blur: 0, alpha: 1, spd: .85 }, 2: { blur: 0, alpha: 1, spd: 1.1 } };
+
+  function rr(ctx, x, y, s, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + s, y, x + s, y + s, r); ctx.arcTo(x + s, y + s, x, y + s, r); ctx.arcTo(x, y + s, x, y, r); ctx.arcTo(x, y, x + s, y, r); ctx.closePath(); }
+  function hash(i) { var x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+  function initCovers() {
+    var canvas = document.getElementById('spt-covers');
+    if (!canvas || !canvas.getContext) return;
+    if (!window.matchMedia || !matchMedia('(min-width: 901px)').matches) { return; }
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var base = ASSETS + '/images/spt-cover-', ext = '.jpg', speed = 18, scale = .92, SC = 1;
+    var dir = [1, -0.58], dl = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1]); dir = [dir[0] / dl, dir[1] / dl];
+    var ctx = canvas.getContext('2d'), imgs = {}, tiles = [], W = 0, H = 0, dpr = 1, FW = 0, FH = 0, M = 0;
+    var loaded = 0;
+    var ready = Promise.all(NAMES.map(function (n) {
+      return new Promise(function (res) { var im = new Image(); im.onload = function () { imgs[n] = im; loaded++; res(); }; im.onerror = function () { res(); }; im.src = base + n + ext; });
+    }));
+
+    function heroW() { var p = canvas.parentElement; return (p && p.clientWidth) || W; }
+    function build() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      if (!W || !H) return;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      SC = scale * Math.max(heroW(), H * 1.6) / REF_W * 1.08; var sc = SC;
+      M = 200 * sc; FW = W + M * 2; var rowH = REF_H * sc; var rows = Math.max(1, Math.ceil((H + M * 2) / rowH)); FH = rows * rowH;
+      tiles = []; var k = 0;
+      var ORDER = NAMES.slice(); for (var q = ORDER.length - 1; q > 0; q--) { var j = Math.floor(hash(q + 41) * (q + 1)); var tmp = ORDER[q]; ORDER[q] = ORDER[j]; ORDER[j] = tmp; }
+      for (var r = 0; r < rows; r++) {
+        var cols = Math.max(1, Math.ceil(FW / (REF_W * sc)));
+        for (var c = 0; c < cols; c++) {
+          L.forEach(function (t) {
+            var mirror = (r + c) % 2 === 1;
+            var x = (mirror ? REF_W - t[1] : t[1]) * sc + c * REF_W * sc, y = t[2] * sc + r * rowH;
+            if (x > FW + M) return;
+            var name = null, R = 520 * sc;
+            for (var q = 0; q < ORDER.length; q++) {
+              var cand = ORDER[(k + q) % ORDER.length], ok = true;
+              for (var z = 0; z < tiles.length; z++) { var o = tiles[z]; if (o.name === cand) { var dx = Math.abs(o.x0 - x), dy = Math.abs(o.y0 - y); dx = Math.min(dx, FW - dx); dy = Math.min(dy, FH - dy); if (dx < R && dy < R * .8) { ok = false; break; } } }
+              if (ok) { name = cand; break; }
+            }
+            if (!name) name = ORDER[k % ORDER.length];
+            var d = DEPTH[t[4]]; var s = t[3] * sc; k++;
+            tiles.push({ name: name, x0: x, y0: y, s: s, depth: t[4], d: d, ph: hash(k) * 6.283, per: 6 + hash(k + 9) * 5, amp: (3 + hash(k + 3) * 4) * sc, tile: null });
+          });
+        }
+      }
+      tiles.sort(function (a, b) { return a.depth - b.depth; });
+      tiles.forEach(prerender);
+    }
+    function prerender(t) {
+      var im = imgs[t.name]; if (!im) return; var pad = Math.ceil((t.d.blur * 2 + 24) * dpr); var s = Math.round(t.s * dpr);
+      var c = document.createElement('canvas'); c.width = s + pad * 2; c.height = s + pad * 2; var g = c.getContext('2d');
+      var r = s * 0.12;
+      if (t.d.blur) g.filter = 'blur(' + (t.d.blur * dpr) + 'px)';
+      g.save(); g.shadowColor = 'rgba(21,21,21,' + (t.depth === 2 ? .22 : .14) + ')'; g.shadowBlur = 18 * dpr; g.shadowOffsetY = 8 * dpr;
+      rr(g, pad, pad, s, r); g.fillStyle = '#fff'; g.fill(); g.restore();
+      g.save(); rr(g, pad, pad, s, r); g.clip(); g.drawImage(im, pad, pad, s, s); g.restore();
+      g.save(); rr(g, pad + .5, pad + .5, s - 1, r); g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 1 * dpr; g.stroke(); g.restore();
+      t.tile = c; t.pad = pad / dpr;
+    }
+    function mod(a, n) { return ((a % n) + n) % n; }
+    function renderAt(time) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      var sc = SC / (scale * 1.08);
+      for (var i = 0; i < tiles.length; i++) {
+        var t = tiles[i]; if (!t.tile) continue;
+        var dist = time * speed * sc * t.d.spd;
+        var x = mod(t.x0 + dir[0] * dist, FW) - M, y = mod(t.y0 + dir[1] * dist, FH) - M;
+        y += Math.sin(time * 6.283 / t.per + t.ph) * t.amp; x += Math.cos(time * 6.283 / (t.per * 1.3) + t.ph) * t.amp * .5;
+        if (x > W + t.s || y > H + t.s || x < -t.s * 2 || y < -t.s * 2) continue;
+        ctx.globalAlpha = t.d.alpha; ctx.drawImage(t.tile, x - t.s / 2 - t.pad, y - t.s / 2 - t.pad, t.tile.width / dpr, t.tile.height / dpr);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    ready.then(function () {
+      build();
+      
+      if (!loaded && window.console) { console.warn('spt: hero covers did not load. Check the GitHub upload.'); }
+      var t = 0, last = null, raf = 0, visible = true;
+      function loop(now) {
+        if (last !== null) { t += Math.min(.1, (now - last) / 1000); }
+        last = now; renderAt(t); raf = requestAnimationFrame(loop);
+      }
+      function start() { if (!raf && !reduce && visible && !document.hidden) { last = null; raf = requestAnimationFrame(loop); } }
+      function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+      renderAt(0);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) start(); else stop(); }).observe(canvas);
+      }
+      document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
+      start();
+      var to; window.addEventListener('resize', function () { clearTimeout(to); to = setTimeout(function () { build(); renderAt(t); }, 150); });
+    });
+  }
+
+
+  /* ---------- Scroll reveal ---------- */
+  function initReveal() {
+    var els = document.querySelectorAll('.spt-reveal, .spt-col-glow');
+    if (reduce || !hasIO) { [].forEach.call(els, function (el) { el.classList.add('is-in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+    [].forEach.call(els, function (el) { io.observe(el); });
+  }
+
+  /* ---------- Stat count-up ----------
+     <div data-count="4.2" data-decimals="1" data-prefix="" data-suffix="x">4.2x</div>
+     The markup holds the final value, so no-JS and reduced motion see it. */
+  function initCounts() {
+    var els = document.querySelectorAll('[data-count]');
+    if (reduce || !hasIO) return;
+    function fmt(el, v) {
+      var d = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      return (el.getAttribute('data-prefix') || '') + v.toFixed(d) + (el.getAttribute('data-suffix') || '');
+    }
+    function run(el) {
+      var target = parseFloat(el.getAttribute('data-count'));
+      if (!target) return;                      /* $0 stays $0 */
+      var t0 = null;
+      function step(t) {
+        if (!t0) { t0 = t; }
+        var p = Math.min(1, (t - t0) / COUNT_MS);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(el, target * eased);
+        if (p < 1) { requestAnimationFrame(step); }
+      }
+      el.textContent = fmt(el, 0);
+      requestAnimationFrame(step);
+    }
+    function runWord(el) {
+      var word = el.getAttribute('data-count-word'), t0 = null;
+      function step(t) {
+        if (!t0) { t0 = t; }
+        var p = Math.min(1, (t - t0) / COUNT_MS);
+        var v = Math.round(Math.pow(10, 6 * (1 - Math.pow(1 - p, 2))));
+        el.textContent = p < 1 ? v.toLocaleString('en-US') : word;
+        if (p < 1) { requestAnimationFrame(step); }
+      }
+      el.textContent = '1';
+      requestAnimationFrame(step);
+    }
+    var words = document.querySelectorAll('[data-count-word]');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          if (e.target.hasAttribute('data-count-word')) { runWord(e.target); } else { run(e.target); }
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    [].forEach.call(els, function (el) { io.observe(el); });
+    [].forEach.call(words, function (el) { io.observe(el); });
+  }
+
+  /* ---------- Testimonial carousel ----------
+     Auto-advances; arrows, dots and swipe also work. Pauses on hover,
+     on keyboard focus and when off screen. */
+  function initCarousel(root) {
+    var slides = root.querySelectorAll('.spt-slide');
+    var dots = root.querySelectorAll('.spt-dot');
+    var prev = root.querySelector('[data-prev]');
+    var next = root.querySelector('[data-next]');
+    var i = 0, timer = null, hover = false, focus = false, visible = true;
+    root.style.setProperty('--ms', TESTIMONIAL_MS + 'ms');
+
+    function paused() { return reduce || hover || focus || !visible; }
+    function schedule() {
+      clearTimeout(timer);
+      root.classList.toggle('is-paused', paused());
+      if (!paused()) { timer = setTimeout(function () { show(i + 1); }, TESTIMONIAL_MS); }
+    }
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      [].forEach.call(slides, function (s, k) {
+        s.classList.toggle('is-active', k === i);
+        s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+      });
+      [].forEach.call(dots, function (d, k) {
+        d.classList.toggle('is-active', k === i);
+        d.setAttribute('aria-current', k === i ? 'true' : 'false');
+        var bar = d.querySelector('span');
+        if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+      });
+      schedule();
+      setTimeout(fitPage, 60);
+    }
+    if (prev) { prev.addEventListener('click', function () { show(i - 1); }); }
+    if (next) { next.addEventListener('click', function () { show(i + 1); }); }
+    [].forEach.call(dots, function (d, k) { d.addEventListener('click', function () { show(k); }); });
+    root.addEventListener('mouseenter', function () { hover = true; schedule(); });
+    root.addEventListener('mouseleave', function () { hover = false; schedule(); });
+    root.addEventListener('focusin', function () { focus = true; schedule(); });
+    root.addEventListener('focusout', function () { focus = false; schedule(); });
+
+    var x0 = null;
+    root.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+    root.addEventListener('pointerup', function (e) {
+      if (x0 === null) return;
+      var dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) { show(dx < 0 ? i + 1 : i - 1); }
+    });
+    if (hasIO) {
+      new IntersectionObserver(function (en) { visible = en[0].isIntersecting; schedule(); }, { threshold: 0.2 }).observe(root);
+    }
+    show(0);
+  }
+
+  /* ---------- Pause looping motion while its section is off screen ---------- */
+  function initOffscreen() {
+    if (!hasIO) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target.classList.toggle('is-offscreen', !e.isIntersecting); });
+    });
+    [].forEach.call(document.querySelectorAll('[data-spt-loop]'), function (el) { io.observe(el); });
+  }
+
+  ready(function () {
+    safely('scroll', initScroll);
+    safely('form', watchForForm);
+    safely('reveal', initReveal);
+    safely('counts', initCounts);
+    safely('carousel', function () { [].forEach.call(document.querySelectorAll('[data-spt-carousel]'), initCarousel); });
+    safely('covers', initCovers);
+    safely('offscreen', initOffscreen);
+    safely('fitPage', fitPage);
+  });
+  window.addEventListener('load', function () { placeForm(); fitPage(); });
+  window.addEventListener('resize', reapply);
+  window.addEventListener('orientationchange', reapply);
+  setTimeout(reapply, 800);
+  setTimeout(reapply, 2000);
+  setTimeout(reapply, 4000);
+
+})();
+</script>

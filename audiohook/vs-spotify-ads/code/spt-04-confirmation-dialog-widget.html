@@ -1,0 +1,149 @@
+<!-- ============================================================
+     FORM CONFIRMATION DIALOG ONLY  |  AUDIOHOOK  |  VS. SPOTIFY ADS
+
+     This is NOT the main page markup. It goes into a Custom HTML widget
+     on the CONFIRMATION DIALOG canvas in Unbounce, not on the page canvas.
+     Do this on both the desktop and mobile views. Delete the dialog's
+     default text first.
+
+     Recommended sizes (widget at X 0, Y 0, same size as the dialog):
+       Desktop: 512 x 375      Mobile: 240 x 310
+
+     The card fills the whole dialog edge to edge and scales its type to fit.
+     The dialog's rounded corners and the close X (moved onto the card,
+     top right) come from 02-stylesheet.css on the page. On short dialogs it drops
+     the logo, then the footnote, then the check, so nothing is ever cut off.
+
+     Styles and fonts are self-contained here, because the dialog
+     does not inherit the page stylesheet.
+     ============================================================ -->
+
+<div class="spt-ty-box">
+  <div class="spt-ty" role="status" aria-live="polite">
+    <div class="spt-ty-card">
+      <img class="spt-ty-logo" src="https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/audiohook/vs-spotify-ads/images/spt-logo-light.svg" alt="Audiohook" width="120" height="18">
+
+      <div class="spt-ty-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path class="spt-ty-tick" d="M4.5 12.5l5 5L19.5 7.5" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </div>
+
+      <h2>Thanks, <span class="spt-ty-hl">we’ve got it.</span></h2>
+
+      <p>A member of the Audiohook team will be in touch&nbsp;shortly.</p>
+
+      <p class="spt-ty-meta">You can close this window.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Unbounce loads the confirmation dialog as its own small page in a frame.
+   When that's the case, the card takes over the whole frame, so it always
+   matches the dialog's real size instead of the widget box. */
+(function () {
+  var framed = true;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  if (framed) { document.documentElement.classList.add('spt-ty-framed'); }
+})();
+</script>
+
+<style>
+@font-face{font-family:'SPT Clash Display';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/audiohook/vs-spotify-ads/fonts/spt-clash-display-600.woff2") format('woff2');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'SPT DM Sans';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/audiohook/vs-spotify-ads/fonts/spt-dm-sans-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+
+/* In the dialog frame: fill it edge to edge, no scrollbars */
+html.spt-ty-framed, html.spt-ty-framed body { margin: 0 !important; height: 100% !important; overflow: hidden !important; background: #151515 !important; }
+html.spt-ty-framed .spt-ty-box { position: fixed !important; inset: 0 !important; width: auto !important; height: auto !important; z-index: 2147483000; }
+
+/* The box is the size reference for everything below */
+.spt-ty-box {
+  width: 100%; height: 100%;
+  background: #151515;
+  container-type: size; container-name: sptty;
+  overflow: hidden;
+}
+
+.spt-ty {
+  --ink: #151515; --magenta: #F90091;
+  --font-heading: 'SPT Clash Display', 'Clash Display', system-ui, sans-serif;
+  --font-body: 'SPT DM Sans', 'DM Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+  width: 100%; height: 100%;
+  padding: 0;                                       /* card runs edge to edge */
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+.spt-ty *, .spt-ty *::before, .spt-ty *::after { box-sizing: border-box; }
+
+/* Dark card, magenta glow rising from the bottom edge */
+.spt-ty-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  width: 100%; height: 100%;                        /* fills the dialog, inside the padding */
+  background: var(--ink); color: #fff;
+  border-radius: 0;                                 /* the dialog box rounds the corners */
+  padding: clamp(14px, min(7cqw, 9cqh), 36px) clamp(14px, 6cqw, 32px);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.spt-ty-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(130% 60% at 50% 112%, rgba(249,0,145,.6) 0%, rgba(249,0,145,.22) 45%, rgba(249,0,145,0) 78%);
+}
+
+.spt-ty-logo { display: block; width: clamp(84px, 22cqw, 120px); height: auto; margin: 0 0 clamp(14px, 6cqh, 28px); opacity: .92; }
+
+.spt-ty-mark {
+  flex: none;
+  width: clamp(36px, 15cqh, 60px); height: clamp(36px, 15cqh, 60px); border-radius: 50%;
+  background: var(--magenta);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 clamp(4px, 2cqh, 8px) rgba(249,0,145,.18), 0 14px 32px -12px rgba(249,0,145,.7);
+  margin: 0 0 clamp(12px, 6cqh, 26px);
+  animation: spt-ty-pop .5s cubic-bezier(.2,.9,.3,1.3) both;
+}
+.spt-ty-mark svg { display: block; width: 46%; height: 46%; }
+.spt-ty-tick { stroke-dasharray: 24; stroke-dashoffset: 24; animation: spt-ty-draw .45s ease-out .3s forwards; }
+
+.spt-ty h2 {
+  font-family: var(--font-heading) !important;
+  font-size: 24px !important;
+  font-size: clamp(17px, min(8.8cqw, 8.5cqh), 30px) !important;
+  font-weight: 600 !important;
+  line-height: 1.22 !important; letter-spacing: -0.01em !important;
+  color: #fff !important; margin: 0 0 .5em !important;
+  text-wrap: balance;
+}
+/* Brand highlight block, as in the page headlines */
+.spt-ty-hl { display: inline-block; background: #fff; color: var(--ink); padding: 0 .2em .04em; margin-top: .12em; line-height: 1.12; font-family: inherit !important; }
+
+.spt-ty p {
+  font-family: var(--font-body) !important;
+  font-size: 15px !important;
+  font-size: clamp(12.5px, min(6cqw, 5cqh), 16px) !important;
+  line-height: 1.5 !important;
+  color: rgba(235,235,235,.82) !important;
+  margin: 0 !important; max-width: 400px;
+  text-wrap: pretty;
+}
+.spt-ty .spt-ty-meta {
+  font-size: clamp(11.5px, min(5cqw, 3.8cqh), 13.5px) !important;
+  color: rgba(235,235,235,.55) !important;
+  margin-top: clamp(12px, 5cqh, 22px) !important; padding-top: clamp(10px, 4cqh, 18px) !important;
+  border-top: 1px solid rgba(255,255,255,.12);
+  width: 100%; max-width: 280px;
+}
+
+/* Short dialogs: shed the extras so nothing is ever cut off */
+@container sptty (max-height: 330px) { .spt-ty-logo { display: none; } }
+@container sptty (max-height: 250px) { .spt-ty .spt-ty-meta { display: none; } }
+@container sptty (max-height: 168px) { .spt-ty-mark { display: none; } }
+
+@keyframes spt-ty-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes spt-ty-draw { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .spt-ty-mark { animation: none; }
+  .spt-ty-tick { animation: none; stroke-dashoffset: 0; }
+}
+</style>
