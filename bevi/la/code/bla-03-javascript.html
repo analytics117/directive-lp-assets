@@ -1,0 +1,431 @@
+<script>
+/* ==========================================================
+   BEVI LA (bevi.co/bevi-la/)  |  PAGE SCRIPTS
+   Paste into: Javascripts panel > Add New JavaScript, name it
+   "Page scripts", placement BEFORE BODY END TAG.
+   Keep the <script> tags.
+   Does: viewport tag, page height fit, native-form placement and
+   styling hooks, CTA scroll, fan video carousel, flavor carousel,
+   machine card accordions, FAQ accordion, pause-when-off-screen.
+   Only the settings under EDIT HERE are meant to be edited.
+   ========================================================== */
+(function () {
+
+  /* ---------------- EDIT HERE ---------------- */
+  var BUTTON_LABEL = 'Send my comparison';   /* form submit label */
+  var EMAIL_LABEL  = 'Work email';           /* label above the field */
+  var EMAIL_HINT   = 'you@company.com';      /* placeholder */
+  /* Native form field ID, set in the Unbounce form builder.
+     Either "email" or "work_email" works. */
+  var EMAIL_IDS    = ['email', 'work_email', 'work_email_address'];
+  var FAN_MS       = 4500;                   /* each fan video plays this long */
+  /* ------------------------------------------- */
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO  = 'IntersectionObserver' in window;
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') { fn(); }
+    else { document.addEventListener('DOMContentLoaded', fn); }
+  }
+  function safely(name, fn) {
+    try { fn(); } catch (err) { if (window.console) { console.error('bla: ' + name + ' failed', err); } }
+  }
+  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+
+  /* Without a viewport tag phones render at ~980px and no media query fires */
+  (function ensureViewport() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+
+  /* ---------- Page height ----------
+     Measures where the page really ends and writes it to a CSS variable.
+     The stylesheet applies it with !important, so Unbounce rewriting its
+     own heights cannot bring a white bar back below the footer. */
+  function fitPage() {
+    var el = document.querySelector('.bla-page');
+    if (!el) return;
+    var wrap  = el.closest('[id^="lp-code"]');
+    var block = el.closest('.lp-pom-block');
+    var root  = el.closest('#lp-pom-root, .lp-pom-root');
+    if (wrap) { wrap.style.setProperty('height', 'auto', 'important'); }
+    var h = Math.ceil(el.getBoundingClientRect().height);
+    if (!h) return;
+    var top = 0;
+    if (block) { top = Math.max(0, Math.round(el.getBoundingClientRect().top - block.getBoundingClientRect().top)); }
+    document.documentElement.style.setProperty('--bla-h', (h + top) + 'px');
+    if (root)  { root.classList.add('bla-fit'); }
+    if (block) { block.classList.add('bla-fit-block'); }
+  }
+
+  /* ---------- CTAs scroll to the form ----------
+     Delegated from the document so late-added elements still work. */
+  function scrollToForm() {
+    var card = document.getElementById('bla-form-card') || document.getElementById('bla-start');
+    if (!card) { if (window.console) { console.warn('bla: form card not found'); } return; }
+    try { card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }
+    catch (err) { card.scrollIntoView(true); }
+    setTimeout(function () {
+      var first = card.querySelector('input[type="email"], input[type="text"]');
+      if (first && first.focus) { try { first.focus({ preventScroll: true }); } catch (e) { first.focus(); } }
+    }, reduce ? 0 : 700);
+  }
+  function initScroll() {
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('.bla-cta, a[href="#bla-start"]') : null;
+      if (!a) return;
+      e.preventDefault();
+      scrollToForm();
+    }, false);
+    if (window.console) { console.log('bla: scroll ready, ' + document.querySelectorAll('.bla-cta').length + ' CTA buttons'); }
+  }
+
+  /* ---------- Native Unbounce form ----------
+     Unbounce's own form is moved into the card and restyled by the
+     stylesheet. Nothing is relayed or simulated: its own button submits
+     its own form, so lead capture and conversion tracking are untouched. */
+  function unstyle(root) {
+    each(root.querySelectorAll('*'), function (el) {
+      ['position', 'top', 'left', 'right', 'bottom', 'height', 'min-height', 'max-height',
+       'width', 'min-width', 'max-width', 'transform', 'float', 'white-space',
+       'text-overflow', 'overflow'].forEach(function (p) { el.style.removeProperty(p); });
+    });
+  }
+  function findForm() { return document.querySelector('.lp-pom-form, .hs-form'); }
+
+  function placeForm() {
+    var slot = document.querySelector('.bla-form-slot');
+    if (!slot) return false;
+    var form = findForm();
+    if (!form) return false;
+    if (slot.contains(form)) return true;
+    var widget = form.closest('[id^="lp-pom-form"]') || form.closest('[id^="lp-pom-box"]') || form;
+    slot.appendChild(widget);
+    buildForm(slot);
+    fitPage();
+    if (window.console) { console.log('bla: form placed in the card'); }
+    return true;
+  }
+  function watchForForm() {
+    if (placeForm()) return;
+    var obs = new MutationObserver(function () { if (placeForm()) { obs.disconnect(); } });
+    obs.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () {
+      obs.disconnect();
+      if (!document.querySelector('.bla-form-slot form') && window.console) {
+        console.warn('bla: no Unbounce form found. Drag one form onto the canvas (see README).');
+      }
+    }, 10000);
+  }
+  function labelFor(slot, input) {
+    var lab = input.id ? slot.querySelector('label[for="' + input.id + '"]') : null;
+    return lab || input.closest('label') || (input.closest('.lp-pom-form-field') || document).querySelector('label');
+  }
+
+  function buildForm(slot) {
+    if (slot.getAttribute('data-built')) return;
+    var form = slot.querySelector('form');
+    if (!form) return;
+    slot.setAttribute('data-built', '1');
+    unstyle(slot);
+
+    /* Email field: type, autocomplete, placeholder, required, label */
+    var input = null;
+    for (var n = 0; n < EMAIL_IDS.length && !input; n++) {
+      input = slot.querySelector('#' + EMAIL_IDS[n] + ', [name="' + EMAIL_IDS[n] + '"]');
+    }
+    if (!input) { input = slot.querySelector('input[type="email"], input[type="text"]'); }
+    if (input) {
+      try { input.type = 'email'; } catch (e) {}
+      input.setAttribute('autocomplete', 'email');
+      input.setAttribute('inputmode', 'email');
+      input.setAttribute('placeholder', EMAIL_HINT);
+      input.setAttribute('required', 'required');
+      input.setAttribute('aria-required', 'true');
+      var lab = labelFor(slot, input);
+      if (lab) {
+        var holder = lab.querySelector('.label-style, .label') || lab;
+        holder.textContent = EMAIL_LABEL;
+      }
+    } else if (window.console) {
+      console.warn('bla: email field not found. Give the form field the ID "email".');
+    }
+
+    /* Submit button: keep the real one, label it, hide any step buttons */
+    var submit = null;
+    each(slot.querySelectorAll('.lp-pom-button, button, input[type="submit"], input[type="button"]'), function (b) {
+      var label = (b.value || b.textContent || '').trim().toLowerCase();
+      var wrap = b.closest('[id^="lp-pom-button"]') || b;
+      if (/previous|next|continue|back/.test(label)) { wrap.style.setProperty('display', 'none', 'important'); return; }
+      if (submit) { wrap.style.setProperty('display', 'none', 'important'); return; }
+      submit = b;
+      var span = b.querySelector ? b.querySelector('.label') : null;
+      if (b.tagName === 'INPUT') { b.value = BUTTON_LABEL; }
+      else if (span) { span.textContent = BUTTON_LABEL; }
+      else { b.textContent = BUTTON_LABEL; }
+    });
+
+    /* red outline on a field the browser refuses to submit */
+    form.addEventListener('invalid', function (ev) {
+      var t = ev.target; if (t && t.classList) { t.classList.add('bla-invalid'); }
+    }, true);
+    form.addEventListener('input', function (ev) {
+      var t = ev.target; if (t && t.classList) { t.classList.remove('bla-invalid'); }
+    }, true);
+  }
+
+  function reapply() {
+    var slot = document.querySelector('.bla-form-slot');
+    if (slot && slot.getAttribute('data-built')) { unstyle(slot); }
+    fitPage();
+  }
+
+  /* ---------- Fan videos ----------
+     Three cards; the centre one plays for FAN_MS, then they rotate.
+     Videos load only when the section comes into view. */
+  function initFans(stage) {
+    var cards = stage.querySelectorAll('.bla-fan');
+    if (!cards.length) return;
+    var order = [0, 1, 2], timer = null, visible = false, started = false;
+    stage.style.setProperty('--bla-fan-ms', FAN_MS + 'ms');
+
+    function load() {
+      if (started) return; started = true;
+      each(cards, function (c) {
+        var v = c.querySelector('video'); var src = c.getAttribute('data-video');
+        if (v && src && !v.getAttribute('src')) { v.src = src; v.preload = 'auto'; }
+      });
+    }
+    function apply() {
+      each(cards, function (c, k) {
+        var pos = order.indexOf(k);
+        c.setAttribute('data-pos', String(pos));
+        var v = c.querySelector('video');
+        var bar = c.querySelector('.bla-fan-progress i');
+        if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+        if (!v) return;
+        if (pos === 0 && visible && !reduce) {
+          try { v.currentTime = 0; } catch (e) {}
+          var p = v.play(); if (p && p.catch) { p.catch(function () {}); }
+        } else { v.pause(); }
+      });
+    }
+    function next() { order.unshift(order.pop()); apply(); schedule(); }
+    function schedule() {
+      clearTimeout(timer);
+      if (visible && !reduce && !document.hidden) { timer = setTimeout(next, FAN_MS); }
+    }
+    each(cards, function (c, k) {
+      c.addEventListener('click', function () {
+        var pos = order.indexOf(k); if (pos === 0) return;
+        while (order.indexOf(k) !== 0) { order.unshift(order.pop()); }
+        apply(); schedule();
+      });
+    });
+    if (hasIO) {
+      new IntersectionObserver(function (en) {
+        visible = en[0].isIntersecting;
+        if (visible) { load(); }
+        apply(); schedule();
+      }, { threshold: 0.25 }).observe(stage);
+    } else { visible = true; load(); apply(); schedule(); }
+    document.addEventListener('visibilitychange', function () { apply(); schedule(); });
+  }
+
+  /* ---------- Flavor carousel (Pick your pour) ---------- */
+  function initPour(section) {
+    var items = section.querySelectorAll('.bla-flavor');
+    var n = items.length; if (!n) return;
+    var i = 2; /* Orange Cream in the centre, as in the design */
+    function slot(k) { var d = ((k - i) % n + n) % n; if (d > n / 2) { d -= n; } return d; }
+    function show(to) {
+      i = ((to % n) + n) % n;
+      each(items, function (el, k) {
+        var s = slot(k);
+        var was = parseInt(el.getAttribute('data-slot'), 10);
+        if (!isNaN(was) && Math.abs(s - was) > 2) {
+          /* wrapping round the back: disappear, move, fade back in */
+          el.classList.add('bla-wrap-jump');
+          el.style.opacity = '0';
+          el.setAttribute('data-slot', String(s));
+          void el.offsetWidth;
+          el.classList.remove('bla-wrap-jump');
+          requestAnimationFrame(function () { requestAnimationFrame(function () { el.style.opacity = ''; }); });
+        }
+        el.setAttribute('data-slot', String(s));
+        el.setAttribute('aria-hidden', s === 0 ? 'false' : 'true');
+        if (s === 0) {
+          section.style.setProperty('--bla-tint', el.getAttribute('data-tint'));
+          section.style.setProperty('--bla-mid', el.getAttribute('data-mid'));
+        }
+      });
+    }
+    each(section.querySelectorAll('.bla-arrow'), function (b) {
+      b.addEventListener('click', function () { show(i + parseInt(b.getAttribute('data-dir'), 10)); });
+    });
+    each(items, function (el, k) { el.addEventListener('click', function () { show(k); }); });
+    var x0 = null, wrap = section.querySelector('.bla-flavors');
+    wrap.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+    wrap.addEventListener('pointerup', function (e) {
+      if (x0 === null) return; var dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) { show(dx < 0 ? i + 1 : i - 1); }
+    });
+    show(i);
+  }
+
+  /* ---------- Machine cards: See all features ----------
+     Side by side (desktop): both open and close together.
+     Stacked (tablet/phone): each card opens on its own. */
+  function initCards() {
+    var cards = document.querySelectorAll('[data-bla-mcard]');
+    function stacked() { return window.matchMedia('(max-width: 900px)').matches; }
+    function set(card, open) {
+      var btn = card.querySelector('.bla-mcard-toggle');
+      var panel = card.querySelector('.bla-spec');
+      var label = btn ? btn.querySelector('span') : null;
+      if (!btn || !panel) return;
+      card.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (label) { label.textContent = open ? 'Hide features' : 'See all features'; }
+      panel.style.maxHeight = open ? panel.scrollHeight + 'px' : '0px';
+    }
+    each(cards, function (card) {
+      var btn = card.querySelector('.bla-mcard-toggle');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        var open = !card.classList.contains('is-open');
+        if (stacked()) { set(card, open); }
+        else { each(cards, function (c) { set(c, open); }); }
+        setTimeout(fitPage, 480);
+      });
+    });
+    window.addEventListener('resize', function () {
+      each(cards, function (c) {
+        if (c.classList.contains('is-open')) { var p = c.querySelector('.bla-spec'); if (p) { p.style.maxHeight = p.scrollHeight + 'px'; } }
+      });
+    });
+  }
+
+  /* ---------- FAQ accordion (one open at a time, first open) ----------
+     Once an answer has finished opening its height cap is removed, so
+     late-loading fonts can never leave it too tall or too short. */
+  function initFaq() {
+    var items = document.querySelectorAll('.bla-faq-item');
+    if (!items.length) return;
+    function set(item, open, instant) {
+      var a = item.querySelector('.bla-faq-a'), q = item.querySelector('.bla-faq-q');
+      if (!a) return;
+      item.classList.toggle('is-open', open);
+      if (q) { q.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+      if (open) {
+        a.style.maxHeight = a.scrollHeight + 'px';
+        if (instant) { a.classList.add('is-settled'); }
+        else { setTimeout(function () { if (item.classList.contains('is-open')) { a.classList.add('is-settled'); } fitPage(); }, 380); }
+      } else {
+        if (a.classList.contains('is-settled')) {
+          a.style.maxHeight = a.scrollHeight + 'px';
+          a.classList.remove('is-settled');
+          void a.offsetHeight;
+        }
+        a.style.maxHeight = '0px';
+      }
+    }
+    each(items, function (item) {
+      var q = item.querySelector('.bla-faq-q');
+      q.addEventListener('click', function () {
+        var was = item.classList.contains('is-open');
+        each(items, function (o) { if (o !== item && o.classList.contains('is-open')) { set(o, false); } });
+        set(item, !was);
+        setTimeout(fitPage, 400);
+      });
+    });
+    set(items[0], true, true);
+  }
+
+  /* ---------- Stats count up from zero when they come into view ---------- */
+  function initCounts() {
+    var els = document.querySelectorAll('[data-bla-count]');
+    if (!els.length) return;
+    function fmt(v, d) { return v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+    function finalText(el) {
+      return el.getAttribute('data-final') || (fmt(parseFloat(el.getAttribute('data-bla-count')), parseInt(el.getAttribute('data-decimals') || '0', 10)) + (el.getAttribute('data-suffix') || ''));
+    }
+    if (reduce || !hasIO) { each(els, function (el) { el.textContent = finalText(el); }); return; }
+    each(els, function (el) {
+      var d = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      el.textContent = fmt(0, d) + (el.getAttribute('data-suffix') || '');
+    });
+    function run(el) {
+      var to = parseFloat(el.getAttribute('data-bla-count'));
+      var d = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      var suf = el.getAttribute('data-suffix') || '';
+      var t0 = null, dur = 1600;
+      function step(t) {
+        if (t0 === null) { t0 = t; }
+        var p = Math.min(1, (t - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = p < 1 ? fmt(to * e, d) + suf : finalText(el);
+        if (p < 1) { requestAnimationFrame(step); }
+      }
+      requestAnimationFrame(step);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        /* run when it comes into view, or straight away if it was scrolled past */
+        if (e.isIntersecting || e.boundingClientRect.bottom < 0) { io.unobserve(e.target); run(e.target); }
+      });
+    }, { threshold: 0.35 });
+    each(els, function (el) { io.observe(el); });
+  }
+
+  /* ---------- Pause looping motion while its section is off screen ---------- */
+  function initOffscreen() {
+    var hero = document.querySelector('.bla-hero-video');
+    if (!hasIO) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target.classList.toggle('is-offscreen', !e.isIntersecting); });
+    });
+    each(document.querySelectorAll('[data-bla-loop]'), function (el) { io.observe(el); });
+    if (hero) {
+      if (reduce) { hero.removeAttribute('autoplay'); hero.pause(); return; }
+      new IntersectionObserver(function (en) {
+        if (en[0].isIntersecting) { var p = hero.play(); if (p && p.catch) { p.catch(function () {}); } }
+        else { hero.pause(); }
+      }).observe(hero);
+    }
+  }
+
+  ready(function () {
+    safely('scroll', initScroll);
+    safely('form', watchForForm);
+    safely('fans', function () { each(document.querySelectorAll('[data-bla-fans]'), initFans); });
+    safely('pour', function () { each(document.querySelectorAll('[data-bla-pour]'), initPour); });
+    safely('cards', initCards);
+    safely('faq', initFaq);
+    safely('counts', initCounts);
+    safely('offscreen', initOffscreen);
+    safely('fitPage', fitPage);
+  });
+  window.addEventListener('load', function () { placeForm(); fitPage(); });
+  /* re-fit whenever the page itself changes height (fonts, images, accordions),
+     so no white space is left under the footer */
+  ready(function () {
+    safely('observe', function () {
+      var el = document.querySelector('.bla-page');
+      if (el && 'ResizeObserver' in window) {
+        var raf = 0;
+        new ResizeObserver(function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(fitPage); }).observe(el);
+      }
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { fitPage(); }); }
+    });
+  });
+  window.addEventListener('resize', reapply);
+  window.addEventListener('orientationchange', reapply);
+  setTimeout(reapply, 800);
+  setTimeout(reapply, 2000);
+  setTimeout(reapply, 4000);
+
+})();
+</script>

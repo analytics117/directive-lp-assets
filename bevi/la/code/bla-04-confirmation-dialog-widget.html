@@ -1,0 +1,138 @@
+<!-- ============================================================
+     FORM CONFIRMATION DIALOG ONLY  |  BEVI  |  LA (bevi.co/bevi-la/)
+
+     This is NOT the main page markup. It goes into a Custom HTML widget
+     on the CONFIRMATION DIALOG canvas in Unbounce, not on the page canvas.
+     Do this on both the desktop and mobile views. Delete the dialog's
+     default text first.
+
+     Dialog sizes (set in the form's confirmation settings):
+       Desktop: 520 x 440      Mobile: 300 x 420
+     Place the widget at X 0, Y 0 and make it the same size as the dialog.
+
+     The card fills the whole dialog edge to edge and scales its type
+     to fit. On short dialogs it drops the footnote, then the pattern band,
+     so nothing is ever cut off. Styles and fonts are self-contained
+     here, because the dialog does not inherit the page stylesheet.
+     ============================================================ -->
+
+<div class="bla-ty-box">
+  <div class="bla-ty" role="status" aria-live="polite">
+    <div class="bla-ty-band" aria-hidden="true"></div>
+    <div class="bla-ty-card">
+      <div class="bla-ty-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path class="bla-ty-tick" d="M5 12.5l4.5 4.5L19 7.5" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </div>
+      <h2>Thanks, it’s on its&nbsp;way.</h2>
+      <p>Look out for an email with a side-by-side of our machines and how pricing&nbsp;works.</p>
+      <p class="bla-ty-meta">You can close this window.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Unbounce loads the confirmation dialog as its own small page in a frame.
+   When that's the case, the card takes over the whole frame, so it always
+   matches the dialog's real size instead of the widget box. */
+(function () {
+  var framed = true;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  if (framed) { document.documentElement.classList.add('bla-ty-framed'); }
+})();
+</script>
+
+<style>
+@font-face{font-family:'BLA Corben';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/bevi/la/fonts/bla-corben-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'BLA Jakarta';src:url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/bevi/la/fonts/bla-jakarta-400.woff2") format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+
+/* In the dialog frame: fill it edge to edge, no scrollbars */
+html.bla-ty-framed, html.bla-ty-framed body { margin: 0 !important; height: 100% !important; overflow: hidden !important; background: #fff !important; }
+html.bla-ty-framed .bla-ty-box { position: fixed !important; inset: 0 !important; width: auto !important; height: auto !important; z-index: 2147483000; }
+
+/* The box is the size reference for everything below */
+.bla-ty-box {
+  width: 100%; height: 100%;
+  background: #fff;
+  container-type: size; container-name: blaty;
+  overflow: hidden;
+}
+
+.bla-ty {
+  --navy: #00173E; --blue: #246EFF; --body: #3C4A66;
+  --font-heading: 'BLA Corben', Georgia, serif;
+  --font-body: 'BLA Jakarta', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background: #fff;
+}
+.bla-ty *, .bla-ty *::before, .bla-ty *::after { box-sizing: border-box; }
+
+/* Bevi illustration band across the top (same art as the page belts) */
+.bla-ty-band {
+  flex: none;
+  height: clamp(44px, 16cqh, 72px);
+  background: #00173E url("https://cdn.jsdelivr.net/gh/analytics117/directive-lp-assets@main/bevi/la/images/bla-belt-blue-a.jpg") 0 0 / auto 100% repeat-x;
+}
+
+.bla-ty-card {
+  flex: 1 1 auto; min-height: 0;
+  padding: clamp(16px, 6cqh, 34px) clamp(18px, 8cqw, 44px) clamp(16px, 6cqh, 30px);
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.bla-ty-mark {
+  flex: none;
+  width: clamp(40px, 14cqh, 60px); height: clamp(40px, 14cqh, 60px); border-radius: 50%;
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 clamp(4px, 1.8cqh, 8px) rgba(36,110,255,.15), 0 14px 30px -12px rgba(36,110,255,.7);
+  margin: 0 0 clamp(12px, 5cqh, 24px);
+  animation: bla-ty-pop .5s cubic-bezier(.2,.9,.3,1.3) both;
+}
+.bla-ty-mark svg { display: block; width: 48%; height: 48%; }
+.bla-ty-tick { stroke-dasharray: 24; stroke-dashoffset: 24; animation: bla-ty-draw .45s ease-out .3s forwards; }
+
+.bla-ty h2 {
+  font-family: var(--font-heading) !important;
+  font-size: 30px !important;
+  font-size: clamp(22px, min(7.4cqw, 8.4cqh), 34px) !important;
+  font-weight: 400 !important;
+  line-height: 1.15 !important; letter-spacing: 0 !important;
+  color: var(--navy) !important; margin: 0 0 .45em !important;
+  text-wrap: balance;
+}
+
+.bla-ty p {
+  font-family: var(--font-body) !important;
+  font-size: 16px !important;
+  font-size: clamp(14px, min(4.4cqw, 4.6cqh), 17px) !important;
+  line-height: 1.5 !important;
+  color: var(--body) !important;
+  margin: 0 !important; max-width: 380px;
+  text-wrap: pretty;
+}
+.bla-ty .bla-ty-meta {
+  font-size: clamp(12px, min(3.8cqw, 3.6cqh), 13.5px) !important;
+  color: #7A869E !important;
+  margin-top: clamp(12px, 5cqh, 22px) !important; padding-top: clamp(10px, 4cqh, 16px) !important;
+  border-top: 1px solid #D6E0EF;
+  width: 100%; max-width: 260px;
+}
+
+/* Short dialogs: shed the extras so nothing is ever cut off */
+@container blaty (max-height: 360px) { .bla-ty .bla-ty-meta { display: none; } }
+@container blaty (max-height: 290px) { .bla-ty-band { display: none; } }
+@container blaty (max-height: 210px) { .bla-ty-mark { display: none; } }
+
+@keyframes bla-ty-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes bla-ty-draw { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bla-ty-mark { animation: none; }
+  .bla-ty-tick { animation: none; stroke-dashoffset: 0; }
+}
+</style>
