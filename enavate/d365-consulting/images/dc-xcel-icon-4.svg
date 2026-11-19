@@ -1,0 +1,28 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="40.2487" height="35.0668" viewBox="0 0 40.2487 35.0668" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Mask group">
+<mask id="mask0_0_51" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="41" height="36">
+<g id="Group 642">
+<path id="Vector 5" d="M37.2293 10.9175H2.01174L19.9799 0.855284L37.2293 10.9175Z" stroke="white" stroke-width="1.71057" stroke-linejoin="round"/>
+<line id="Line 6" x1="3.87384" y1="31.1927" x2="36.3746" y2="31.1927" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 8" x1="17.9606" y1="11.7727" x2="17.9606" y2="31.1927" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 9" x1="20.9792" y1="11.7727" x2="20.9792" y2="31.1927" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 10" x1="6.89239" y1="11.7729" x2="6.89239" y2="31.1929" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 11" x1="9.91095" y1="11.7729" x2="9.91095" y2="31.1929" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 12" x1="32.0478" y1="11.7727" x2="32.0477" y2="31.1927" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 13" x1="29.0292" y1="11.7727" x2="29.0292" y2="31.1927" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 7" x1="0.855284" y1="34.2112" x2="39.3934" y2="34.2112" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+</g>
+</mask>
+<g mask="url(#mask0_0_51)">
+<circle id="Ellipse 63" cx="19.2689" cy="19.6714" r="29.9349" fill="url(#paint0_radial_0_51)"/>
+</g>
+</g>
+<defs>
+<radialGradient id="paint0_radial_0_51" cx="0" cy="0" r="1" gradientTransform="matrix(-39.5391 -60.364 60.364 -58.9559 41.7617 53.4558)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D6FF5C"/>
+<stop offset="0.24708" stop-color="#00E6DE"/>
+<stop offset="0.614673" stop-color="#004C47"/>
+<stop offset="1" stop-color="#002323"/>
+</radialGradient>
+</defs>
+</svg>

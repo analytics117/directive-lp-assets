@@ -1,0 +1,30 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44.2774" height="35.067" viewBox="0 0 44.2774 35.067" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Mask group">
+<mask id="mask0_0_4" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="45" height="36">
+<g id="Group 643">
+<line id="Line 15" x1="12.698" y1="5.26325" x2="30.7248" y2="5.26325" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 16" x1="12.698" y1="9.21059" x2="30.7248" y2="9.21059" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 17" x1="12.698" y1="13.1583" x2="30.7248" y2="13.1583" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 18" x1="16.4051" y1="16.89" x2="30.6945" y2="16.89" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 19" x1="19.4051" y1="20.89" x2="42.6945" y2="20.89" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 20" x1="20.4051" y1="24.89" x2="42.6945" y2="24.89" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<line id="Line 21" x1="19.4051" y1="28.89" x2="42.6945" y2="28.89" stroke="white" stroke-width="1.71057" stroke-linecap="round"/>
+<path id="Rectangle 21" d="M13.5498 33.7508H24.343M31.5801 17.3031V0.855284H11.8427V15.2454" stroke="white" stroke-width="1.71057"/>
+<rect id="Rectangle 22" x="23.6847" y="16.645" width="19.7373" height="17.1057" stroke="white" stroke-width="1.71057"/>
+<circle id="Ellipse 63" cx="10.5266" cy="24.5404" r="9.67129" stroke="white" stroke-width="1.71057"/>
+<path id="Vector" d="M10.4089 16.6503C11.9063 16.5443 11.6243 18.063 11.5944 19.079C12.4162 19.2703 14.2189 20.1699 14.216 20.9345C14.2098 22.6793 12.7784 22.0247 12.0772 21.3958C11.281 20.6817 9.63505 20.7495 9.12554 21.6306C9.05413 21.7541 8.99317 21.9629 9.06647 22.1183C9.67493 23.1282 11.0945 23.2832 12.1214 23.754C13.7916 24.5196 15.0881 26.103 14.169 28.0011C13.651 29.0707 12.6878 29.5105 11.6034 29.8724C11.5944 30.9272 11.9666 32.3684 10.5205 32.4349C9.37094 32.1801 9.66021 30.7839 9.68205 29.8609C8.76918 29.6197 7.79298 29.2253 7.06488 28.6046C6.74765 28.3342 6.67591 28.1559 6.57906 27.7677C6.65075 27.4835 6.74969 27.186 6.9855 26.9954C7.5622 26.5293 8.28573 27.0919 8.7838 27.3989C9.54199 27.8662 10.4241 28.1509 11.3095 27.9154C11.9068 27.7564 12.7096 27.2309 12.4632 26.5073C12.3094 26.0718 11.8878 25.8194 11.4942 25.6208C10.7099 25.2248 9.8221 25.0709 9.04701 24.6516C7.93692 24.0729 7.01485 23.0973 7.12774 21.7519C7.21576 20.7027 7.81363 19.9584 8.69749 19.4468C9.03747 19.2501 9.30086 19.1735 9.67635 19.0651C9.67113 18.1075 9.39292 17.1016 10.4089 16.6503Z" fill="white"/>
+</g>
+</mask>
+<g mask="url(#mask0_0_4)">
+<circle id="Ellipse 64" cx="22.139" cy="17.961" r="29.9349" fill="url(#paint0_radial_0_4)"/>
+</g>
+</g>
+<defs>
+<radialGradient id="paint0_radial_0_4" cx="0" cy="0" r="1" gradientTransform="matrix(-39.5391 -60.364 60.364 -58.9559 44.6318 51.7454)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D6FF5C"/>
+<stop offset="0.24708" stop-color="#00E6DE"/>
+<stop offset="0.614673" stop-color="#004C47"/>
+<stop offset="1" stop-color="#002323"/>
+</radialGradient>
+</defs>
+</svg>
