@@ -1,0 +1,121 @@
+<script>
+(function () {
+
+  /* ==========================================================
+     ENAVATE | DYNAMICS 365 CONSULTING, VARIANT B (Directive kit)
+     Javascripts panel > Add New JavaScript, placement "Before Body End Tag".
+
+     - Loads the HubSpot form (NEW BOFU - PPC - Dynamics 365) into
+       .exos-form-slot. HubSpot handles submit and the redirect to
+       Enavate's thank-you page.
+     - Tags Clarity sessions with the Unbounce variant (lp_variant) so
+       heatmaps and recordings can be split A vs B.
+     - Every .exos-cta button scrolls to the form.
+     - Grows the Unbounce section to fit the page, including when the
+       HubSpot form finishes loading or changes height (errors etc.).
+     There is no Unbounce form on this page, so there is no form-moving code.
+     ========================================================== */
+
+  /* HubSpot account the form lives in (from the embed code) */
+  var HUBSPOT_PORTAL = '3002663';
+
+  /* Make sure a viewport tag exists, or phones render at ~980px wide. */
+  (function ensureViewport() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') { fn(); }
+    else { document.addEventListener('DOMContentLoaded', fn); }
+  }
+
+  /* Grows the Unbounce section to fit the page */
+  function fitPage() {
+    var el = document.querySelector('.exos-page');
+    if (!el) return;
+    var wrap = el.closest('[id^="lp-code"]');
+    var block = el.closest('.lp-pom-block');
+    if (wrap) { wrap.style.height = 'auto'; }
+    if (!block) return;
+    var h = el.scrollHeight;
+    block.style.height = h + 'px';
+    var content = block.querySelector('.lp-pom-block-content');
+    if (content) { content.style.height = h + 'px'; }
+  }
+
+  /* Re-fit whenever anything on the page changes height
+     (the HubSpot iframe resizes itself after it loads and on errors). */
+  function watchHeight() {
+    var el = document.querySelector('.exos-page');
+    if (!el || !window.ResizeObserver) return;
+    var t;
+    new ResizeObserver(function () { clearTimeout(t); t = setTimeout(fitPage, 50); }).observe(el);
+  }
+
+  /* Loads HubSpot's DEVELOPER form script once. It finds the .hs-form-html
+     div in the page markup and writes the form into the page as plain HTML
+     (no iframe), so 02-stylesheet.css styles it. */
+  function loadHubSpot() {
+    if (!document.querySelector('.exos-form-slot .hs-form-html')) return;
+    if (document.querySelector('script[data-exos-hs]')) return;
+    var s = document.createElement('script');
+    s.src = 'https://js.hsforms.net/forms/embed/developer/' + HUBSPOT_PORTAL + '.js';
+    s.defer = true;
+    s.setAttribute('data-exos-hs', '1');
+    s.onload = function () { setTimeout(fitPage, 400); };
+    document.body.appendChild(s);
+  }
+
+  /* Clarity: label the session with the variant the visitor saw */
+  function tagClarity() {
+    var tries = 0;
+    (function go() {
+      if (window.clarity && window.ub && ub.page && ub.page.variantId) {
+        clarity('set', 'lp_variant', ub.page.variantId);
+      } else if (tries++ < 20) { setTimeout(go, 500); }
+    })();
+  }
+
+  /* Brings the top of the form card to the top of the viewport.
+     scroll-margin-top in the stylesheet leaves room for the sticky header. */
+  function scrollToCard() {
+    var card = document.getElementById('exos-form-card') || document.getElementById('exos-form');
+    if (!card) return;
+    try { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    catch (err) { card.scrollIntoView(true); }
+  }
+
+  function initScroll() {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.exos-cta, a[href="#exos-form"]') : null;
+      if (!btn) return;
+      e.preventDefault();
+      scrollToCard();
+    }, false);
+    var n = document.querySelectorAll('.exos-cta').length;
+    console.log('Enavate D365 Consulting B: ' + n + ' consultation button' + (n === 1 ? '' : 's') + ' ready');
+  }
+
+  function safely(name, fn) {
+    try { fn(); }
+    catch (err) { console.error('Enavate D365 Consulting B: ' + name + ' failed', err); }
+  }
+
+  ready(function () {
+    safely('scroll', initScroll);
+    safely('hubspot', loadHubSpot);
+    safely('clarity tag', tagClarity);
+    safely('height watcher', watchHeight);
+    safely('fitPage', fitPage);
+  });
+
+  window.addEventListener('load', fitPage);
+  window.addEventListener('resize', fitPage);
+  window.addEventListener('orientationchange', fitPage);
+  setTimeout(fitPage, 800);
+  setTimeout(fitPage, 2000);
+
+})();
+</script>
