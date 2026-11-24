@@ -119,3 +119,11 @@
 
 })();
 </script>
+
+<script>
+  /* Clarity events for the A/B report: CTA clicks and form submit clicks, per variant */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('.exos-cta, .exos-form-slot .hsfc-Button') : null;
+    if (t && window.clarity) clarity('event', t.classList.contains('hsfc-Button') ? 'lp_form_submit_click' : 'lp_cta_click');
+  }, true);
+</script>
