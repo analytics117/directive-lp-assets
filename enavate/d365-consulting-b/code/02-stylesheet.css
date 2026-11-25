@@ -293,6 +293,8 @@ body, #lp-pom-root, .lp-pom-root, .lp-pom-block:has(.exos-page) { background-col
 .dcb-intro { margin-top: 16px; font-size: 18px; line-height: 28px; color: #000202; }
 .dcb-center { margin-top: 48px; text-align: center; }
 .exos-page .dcb-h1-accent, .exos-page .dc-accent.dc-nowrap-block { display: block; line-height: 1.08; margin-bottom: 4px; }
+/* Hero headline: Kepler italic reads small next to the sans, so the accent is sized up to lead */
+.exos-page .dcb-h1-accent { font-size: 1.25em; line-height: 1.04; margin-bottom: 6px; }
 .exos-page .dc-hero .dc-eyebrow { margin-bottom: 36px; font-weight: 500; }
 
 /* Split: copy + shaped photo */
